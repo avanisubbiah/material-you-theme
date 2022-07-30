@@ -53,15 +53,13 @@ class Indicator extends PanelMenu.Button {
 
         let item_light = new PopupMenu.PopupMenuItem(_('Apply Material Light Theme'));
         let item_dark = new PopupMenu.PopupMenuItem(_('Apply Material Dark Theme'));
-        let gsettings = new Gio.Settings({ schema: WALLPAPER_SCHEMA });
-        let wall_path = gsettings.get_string('picture-uri');
-        let pix_buf = GdkPixbuf.Pixbuf.new_from_file_at_size(wall_path.substring(7), 256, 256);
+
         item_light.connect('activate', () => {
-            apply_theme(pix_buf, base_presets, color_mapping, false);
+            apply_theme(base_presets, color_mapping, false, {width: 256, height:256});
             Main.notify("Applying Material You Light Theme", "Some apps may require re-logging in to update")
         });
         item_dark.connect('activate', () => {
-            apply_theme(pix_buf, base_presets, color_mapping, true);
+            apply_theme(base_presets, color_mapping, true, {width: 256, height:256});
             Main.notify("Applying Material You Dark Theme", "Some apps may require re-logging in to update")
         });
         this.menu.addMenuItem(item_light);
@@ -106,8 +104,11 @@ function init(meta) {
     return new Extension(meta.uuid);
 }
 
-function apply_theme(pix_buf, base_presets, color_mapping, is_dark = false) {
+function apply_theme(base_presets, color_mapping, is_dark = false, size) {
     // Getting Material theme from img
+    let gsettings = new Gio.Settings({ schema: WALLPAPER_SCHEMA });
+    let wall_path = gsettings.get_string('picture-uri');
+    let pix_buf = GdkPixbuf.Pixbuf.new_from_file_at_size(wall_path.substring(7), size.width, size.height);
     let theme = theme_utils.themeFromImage(pix_buf);
 
     // Configuring for light or dark theme
