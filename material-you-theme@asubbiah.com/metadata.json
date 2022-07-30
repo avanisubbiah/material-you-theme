@@ -1,0 +1,8 @@
+{
+  "name": "Material You Color Theming",
+  "description": "Applies generated libadwaita theme from wallpaper using Material You",
+  "uuid": "material-you-theme@asubbiah.com",
+  "shell-version": [
+    "42"
+  ]
+}

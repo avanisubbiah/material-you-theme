@@ -1,0 +1,15 @@
+{
+    "accent_color": "primary",
+    "accent_bg_color": "primaryContainer",
+    "accent_fg_color": "onPrimaryContainer",
+    "window_bg_color": "background",
+    "window_fg_color": "onBackground",
+    "view_bg_color": "background",
+    "view_fg_color": "onBackground",
+    "headerbar_bg_color": "surface",
+    "headerbar_fg_color": "onSurface",
+    "dialog_bg_color": "secondaryContainer",
+    "dialog_fg_color": "onSecondaryContainer",
+    "popover_bg_color": "tertiaryContainer",
+    "popover_fg_color": "onTertiaryContainer"
+}
