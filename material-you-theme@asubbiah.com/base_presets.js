@@ -1,4 +1,4 @@
-{
+var base_presets = {
     "dark": {
         "name": "base-preset",
         "variables": {

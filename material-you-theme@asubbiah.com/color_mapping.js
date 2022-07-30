@@ -1,4 +1,4 @@
-{
+var color_mapping = {
     "accent_color": "primary",
     "accent_bg_color": "primaryContainer",
     "accent_fg_color": "onPrimaryContainer",
