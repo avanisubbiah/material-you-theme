@@ -53,34 +53,6 @@ class Indicator extends PanelMenu.Button {
             let command = 'python ' + EXTENSIONDIR + '/' + PYTHONFILE + " " + EXTENSIONDIR + " " + wall_path + " light";
             refresh({"command": command, "interval": 60});
             Main.notify("Applying Material You Dark Theme", "Some apps may require re-logging in to update")
-            // let loop = GLib.MainLoop.new(null, false);
-
-            // try {
-            //     let proc = Gio.Subprocess.new(
-            //         ['python', EXTENSIONDIR + '/' + PYTHONFILE, EXTENSIONDIR, wall_path],
-            //         Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
-            //     );
-    
-            //     proc.communicate_utf8_async(null, null, (proc, res) => {
-            //         try {
-            //             let [, stdout, stderr] = proc.communicate_utf8_finish(res);
-    
-            //             if (proc.get_successful()) {
-            //                 Main.notify(_(stdout));
-            //             } else {
-            //                 throw new Error(stderr);
-            //             }
-            //         } catch (e) {
-            //             logError(e);
-            //         } finally {
-            //             loop.quit();
-            //         }
-            //     });
-            // } catch (e) {
-            //     logError(e);
-            // }
-    
-            // loop.run();
         });
         item_dark.connect('activate', () => {
             let gsettings = new Gio.Settings({ schema: WALLPAPER_SCHEMA });
@@ -88,34 +60,6 @@ class Indicator extends PanelMenu.Button {
             let command = 'python ' + EXTENSIONDIR + '/' + PYTHONFILE + " " + EXTENSIONDIR + " " + wall_path + " dark";
             refresh({"command": command, "interval": 60});
             Main.notify("Applying Material You Dark Theme", "Some apps may require re-logging in to update")
-            // let loop = GLib.MainLoop.new(null, false);
-
-            // try {
-            //     let proc = Gio.Subprocess.new(
-            //         ['python', EXTENSIONDIR + '/' + PYTHONFILE, EXTENSIONDIR, wall_path],
-            //         Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
-            //     );
-    
-            //     proc.communicate_utf8_async(null, null, (proc, res) => {
-            //         try {
-            //             let [, stdout, stderr] = proc.communicate_utf8_finish(res);
-    
-            //             if (proc.get_successful()) {
-            //                 Main.notify(_(stdout));
-            //             } else {
-            //                 throw new Error(stderr);
-            //             }
-            //         } catch (e) {
-            //             logError(e);
-            //         } finally {
-            //             loop.quit();
-            //         }
-            //     });
-            // } catch (e) {
-            //     logError(e);
-            // }
-    
-            // loop.run();
         });
         this.menu.addMenuItem(item_light);
         this.menu.addMenuItem(item_dark);
@@ -160,23 +104,6 @@ function init(meta) {
 async function refresh(command) {
     try {
         await updateGui(command);
-
-        // Don't use MainLoop anymore, just use GLib directly
-        GLib.timeout_add_seconds(0, command.interval, () => {
-            if (cancellable && !cancellable.is_cancelled())
-                // refresh(command);
-
-            // Always explicitly return false (or this constant)
-            // unless you're storing the returned ID to remove the
-            // source later.
-            //
-            // Returning true (GLib.SOURCE_CONTINUE) or a value that
-            // evaluates to true will cause the source to loop. You
-            // could refactor your code to take advantage of that
-            // instead of constantly creating new timeouts each
-            // second.
-            return GLib.SOURCE_REMOVE;
-        });
     } catch (e) {
         // We can skip logging cancelled errors, since we probably
         // did that on purpose if it happens
