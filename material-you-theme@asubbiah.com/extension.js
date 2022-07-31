@@ -34,6 +34,8 @@ const _ = ExtensionUtils.gettext;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const theme_utils = Me.imports.utils.theme_utils;
+const color_utils = Me.imports.utils.color_utils;
+const string_utils = Me.imports.utils.string_utils;
 const { base_presets } = Me.imports.base_presets;
 const { color_mappings } = Me.imports.color_mappings;
 
@@ -63,10 +65,10 @@ class Indicator extends PanelMenu.Button {
 			} else {
 				set_dark_mode(false);
 			}
-            apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 256, height:256});
+            apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 64, height: 64});
 		}));
         refresh_btn.connect('activate', () => {
-            apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 256, height:256});
+            apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 64, height: 64});
         });
         this.menu.addMenuItem(dark_switch);
         this.menu.addMenuItem(refresh_btn);
@@ -110,8 +112,6 @@ function apply_theme(base_presets, color_mappings, is_dark = false, size) {
     let pix_buf = GdkPixbuf.Pixbuf.new_from_file_at_size(wall_path.substring(7), size.width, size.height);
     let theme = theme_utils.themeFromImage(pix_buf);
 
-    log(JSON.stringify(theme, null, 2));
-
     // Configuring for light or dark theme
     let scheme = theme.schemes.light.props;
     let base_preset = base_presets.light;
@@ -131,7 +131,16 @@ function apply_theme(base_presets, color_mappings, is_dark = false, size) {
 
     // Overwritting keys in base_preset with material colors
     for (const key in color_mapping) {
-        base_preset.variables[key] = scheme[color_mapping[key]];
+        if (color_mapping[key].opacity == 1) {
+            base_preset.variables[key] = scheme[color_mapping[key].color];
+        } else {
+            let argb = string_utils.argbFromHex(scheme[color_mapping[key].color]);
+            let r = color_utils.redFromArgb(argb);
+            let g = color_utils.greenFromArgb(argb);
+            let b = color_utils.blueFromArgb(argb);
+            rgba_str = "rgba(" + r + ", " + g + ", " + b + ", " + color_mapping[key].opacity + ")"
+            base_preset.variables[key] = rgba_str;
+        }
     }
 
     // Generating gtk css from preset
