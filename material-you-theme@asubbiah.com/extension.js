@@ -33,8 +33,6 @@ const PopupMenu = imports.ui.popupMenu;
 const _ = ExtensionUtils.gettext;
 
 const Me = ExtensionUtils.getCurrentExtension();
-const math_utils = Me.imports.utils.math_utils;
-const image_utils = Me.imports.utils.image_utils;
 const theme_utils = Me.imports.utils.theme_utils;
 const { base_presets } = Me.imports.base_presets;
 const { color_mapping } = Me.imports.color_mapping;
@@ -85,8 +83,6 @@ class Extension {
     enable() {
         this._indicator = new Indicator();
         Main.panel.addToStatusArea(this._uuid, this._indicator);
-
-        log(math_utils.signum(3));
     }
 
     disable() {

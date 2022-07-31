@@ -22,7 +22,7 @@ const colorUtils = Me.imports.utils.color_utils;
  * @param argb ARGB representation of a color.
  * @return Hex string representing color, ex. #ff0000 for red.
  */
-const hexFromArgb = (argb) => {
+var hexFromArgb = (argb) => {
     const r = colorUtils.redFromArgb(argb);
     const g = colorUtils.greenFromArgb(argb);
     const b = colorUtils.blueFromArgb(argb);
@@ -41,7 +41,7 @@ const hexFromArgb = (argb) => {
  *     hex characters.
  * @return ARGB representation of color.
  */
-const argbFromHex = (hex) => {
+var argbFromHex = (hex) => {
     hex = hex.replace('#', '');
     const isThree = hex.length === 3;
     const isSix = hex.length === 6;
