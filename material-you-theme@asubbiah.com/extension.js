@@ -141,27 +141,53 @@ function apply_theme(base_presets, color_mapping, is_dark = false, size) {
     }
 
     let config_path = GLib.get_home_dir() + "/.config";
+    create_dir(config_path + "/gtk-4.0");
+    create_dir(config_path + "/gtk-3.0");
     write_str(css, config_path + "/gtk-4.0/gtk.css");
     write_str(css, config_path + "/gtk-3.0/gtk.css");
 }
 
+async function create_dir(path) {
+    const file = Gio.File.new_for_path(path);
+    try {
+        await new Promise((resolve, reject) => {
+            file.make_directory_async(
+                GLib.PRIORITY_DEFAULT,
+                null,
+                (file_, result) => {
+                    try {
+                        resolve(file.make_directory_finish(result));
+                    } catch (e) {
+                        reject(e);
+                    }
+                }
+            );
+        });
+    } catch (e) {
+        log(e);
+    }
+}
+
 async function write_str(str, path) {
     const file = Gio.File.new_for_path(path);
-
-    const [, etag] = await new Promise((resolve, reject) => {
-        file.replace_contents_bytes_async(
-            new GLib.Bytes(str),
-            null,
-            false,
-            Gio.FileCreateFlags.REPLACE_DESTINATION,
-            null,
-            (file_, result) => {
-                try {
-                    resolve(file.replace_contents_finish(result));
-                } catch (e) {
-                    reject(e);
+    try {
+        await new Promise((resolve, reject) => {
+            file.replace_contents_bytes_async(
+                new GLib.Bytes(str),
+                null,
+                false,
+                Gio.FileCreateFlags.REPLACE_DESTINATION,
+                null,
+                (file_, result) => {
+                    try {
+                        resolve(file.replace_contents_finish(result));
+                    } catch (e) {
+                        reject(e);
+                    }
                 }
-            }
-        );
-    });
+            );
+        });
+    } catch (e) {
+        log(e);
+    }
 }
