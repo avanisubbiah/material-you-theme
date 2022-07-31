@@ -23,6 +23,7 @@ const WALLPAPER_SCHEMA = 'org.gnome.desktop.background';
 
 const { GObject, St } = imports.gi;
 const {Gio, GLib, Soup, GdkPixbuf, Gdk} = imports.gi;
+const Lang = imports.lang;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
@@ -40,7 +41,10 @@ const { color_mapping } = Me.imports.color_mapping;
 
 const EXTENSIONDIR = Me.dir.get_path();
 const PYTHONFILE = "apply_theme.py"
+const SETTINGSCHEMA = 'org.gnome.shell.extensions.material-you-theme';
+let DARKMODE = 'dark-mode';
 
+let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
     _init() {
@@ -51,24 +55,25 @@ class Indicator extends PanelMenu.Button {
             style_class: 'system-status-icon',
         }));
 
-        let item_light = new PopupMenu.PopupMenuItem(_('Apply Material Light Theme'));
-        let item_dark = new PopupMenu.PopupMenuItem(_('Apply Material Dark Theme'));
+        let dark_switch = new PopupMenu.PopupSwitchMenuItem(_('Dark Mode'), get_dark_mode(), { reactive: true });
+        let refresh_btn = new PopupMenu.PopupMenuItem(_('Refresh Material Theme'));
 
-        item_light.connect('activate', () => {
-            apply_theme(base_presets, color_mapping, false, {width: 256, height:256});
-            Main.notify("Applying Material You Light Theme", "Some apps may require re-logging in to update")
+        dark_switch.connect('toggled', Lang.bind(this, function(object, value){
+			// We will just change the text content of the label
+			if(value) {
+				set_dark_mode(true);
+			} else {
+				set_dark_mode(false);
+			}
+            apply_theme(base_presets, color_mapping, get_dark_mode(), {width: 256, height:256});
+		}));
+        refresh_btn.connect('activate', () => {
+            apply_theme(base_presets, color_mapping, get_dark_mode(), {width: 256, height:256});
         });
-        item_dark.connect('activate', () => {
-            apply_theme(base_presets, color_mapping, true, {width: 256, height:256});
-            Main.notify("Applying Material You Dark Theme", "Some apps may require re-logging in to update")
-        });
-        this.menu.addMenuItem(item_light);
-        this.menu.addMenuItem(item_dark);
+        this.menu.addMenuItem(dark_switch);
+        this.menu.addMenuItem(refresh_btn);
     }
 });
-
-
-let cancellable = null;
 
 class Extension {
     constructor(uuid) {
@@ -78,9 +83,6 @@ class Extension {
     }
 
     enable() {
-        if (cancellable === null)
-            cancellable = new Gio.Cancellable();
-        
         this._indicator = new Indicator();
         Main.panel.addToStatusArea(this._uuid, this._indicator);
 
@@ -88,13 +90,6 @@ class Extension {
     }
 
     disable() {
-        if (cancellable !== null) {
-            cancellable.cancel();
-            cancellable = null;
-        }
-
-        log("Executor stopped");
-
         this._indicator.destroy();
         this._indicator = null;
     }
@@ -102,6 +97,14 @@ class Extension {
 
 function init(meta) {
     return new Extension(meta.uuid);
+}
+
+function get_dark_mode() {
+    return settings.get_boolean(DARKMODE);
+}
+
+function set_dark_mode(bool) {
+    settings.set_boolean(DARKMODE, bool);
 }
 
 function apply_theme(base_presets, color_mapping, is_dark = false, size) {
@@ -114,9 +117,11 @@ function apply_theme(base_presets, color_mapping, is_dark = false, size) {
     // Configuring for light or dark theme
     let scheme = theme.schemes.light.props;
     let base_preset = base_presets.light;
+    let theme_str = "Light";
     if (is_dark) {
         scheme = theme.schemes.dark.props;
         base_preset = base_presets.dark;
+        theme_str = "Dark";
     }
 
     // Converting argb to hex
@@ -145,6 +150,10 @@ function apply_theme(base_presets, color_mapping, is_dark = false, size) {
     create_dir(config_path + "/gtk-3.0");
     write_str(css, config_path + "/gtk-4.0/gtk.css");
     write_str(css, config_path + "/gtk-3.0/gtk.css");
+
+    // Notifying user on theme change
+    Main.notify("Applied Material You " + theme_str + " Theme",
+        "Some apps may require re-logging in to update");
 }
 
 async function create_dir(path) {
