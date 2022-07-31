@@ -35,7 +35,7 @@ const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 const theme_utils = Me.imports.utils.theme_utils;
 const { base_presets } = Me.imports.base_presets;
-const { color_mapping } = Me.imports.color_mapping;
+const { color_mappings } = Me.imports.color_mappings;
 
 const EXTENSIONDIR = Me.dir.get_path();
 const PYTHONFILE = "apply_theme.py"
@@ -63,10 +63,10 @@ class Indicator extends PanelMenu.Button {
 			} else {
 				set_dark_mode(false);
 			}
-            apply_theme(base_presets, color_mapping, get_dark_mode(), {width: 256, height:256});
+            apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 256, height:256});
 		}));
         refresh_btn.connect('activate', () => {
-            apply_theme(base_presets, color_mapping, get_dark_mode(), {width: 256, height:256});
+            apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 256, height:256});
         });
         this.menu.addMenuItem(dark_switch);
         this.menu.addMenuItem(refresh_btn);
@@ -103,20 +103,24 @@ function set_dark_mode(bool) {
     settings.set_boolean(DARKMODE, bool);
 }
 
-function apply_theme(base_presets, color_mapping, is_dark = false, size) {
+function apply_theme(base_presets, color_mappings, is_dark = false, size) {
     // Getting Material theme from img
     let gsettings = new Gio.Settings({ schema: WALLPAPER_SCHEMA });
     let wall_path = gsettings.get_string('picture-uri');
     let pix_buf = GdkPixbuf.Pixbuf.new_from_file_at_size(wall_path.substring(7), size.width, size.height);
     let theme = theme_utils.themeFromImage(pix_buf);
 
+    log(JSON.stringify(theme, null, 2));
+
     // Configuring for light or dark theme
     let scheme = theme.schemes.light.props;
     let base_preset = base_presets.light;
+    let color_mapping = color_mappings.light;
     let theme_str = "Light";
     if (is_dark) {
         scheme = theme.schemes.dark.props;
         base_preset = base_presets.dark;
+        color_mapping = color_mappings.dark;
         theme_str = "Dark";
     }
 
