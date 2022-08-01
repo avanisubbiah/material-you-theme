@@ -113,5 +113,5 @@ var ViewingConditions = class ViewingConditions {
     }
 }
 /** sRGB-like viewing conditions.  */
-ViewingConditions.DEFAULT = ViewingConditions.make();
+// ViewingConditions.DEFAULT = ViewingConditions.make();
 //# sourceMappingURL=viewing_conditions.js.map

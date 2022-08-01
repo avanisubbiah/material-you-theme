@@ -85,7 +85,7 @@ var Cam16 = class Cam16 {
      *     conditions.
      */
     static fromInt(argb) {
-        return Cam16.fromIntInViewingConditions(argb, ViewingConditions.DEFAULT);
+        return Cam16.fromIntInViewingConditions(argb, ViewingConditions.make());
     }
     /**
      * @param argb ARGB representation of a color.
@@ -152,7 +152,7 @@ var Cam16 = class Cam16 {
      * @param h CAM16 hue
      */
     static fromJch(j, c, h) {
-        return Cam16.fromJchInViewingConditions(j, c, h, ViewingConditions.DEFAULT);
+        return Cam16.fromJchInViewingConditions(j, c, h, ViewingConditions.make());
     }
     /**
      * @param j CAM16 lightness
@@ -183,7 +183,7 @@ var Cam16 = class Cam16 {
      *     coordinate on the X axis.
      */
     static fromUcs(jstar, astar, bstar) {
-        return Cam16.fromUcsInViewingConditions(jstar, astar, bstar, ViewingConditions.DEFAULT);
+        return Cam16.fromUcsInViewingConditions(jstar, astar, bstar, ViewingConditions.make());
     }
     /**
      * @param jstar CAM16-UCS lightness.
@@ -213,7 +213,7 @@ var Cam16 = class Cam16 {
      *     viewing conditions for sRGB.
      */
     toInt() {
-        return this.viewed(ViewingConditions.DEFAULT);
+        return this.viewed(ViewingConditions.make());
     }
     /**
      * @param viewingConditions Information about the environment where the color

@@ -142,7 +142,7 @@ const LIGHTNESS_SEARCH_ENDPOINT = 0.01;
  * @return ARGB representation of a color in default viewing conditions
  */
 function getInt(hue, chroma, tone) {
-    return getIntInViewingConditions(math.sanitizeDegreesDouble(hue), chroma, math.clampDouble(0.0, 100.0, tone), ViewingConditions.DEFAULT);
+    return getIntInViewingConditions(math.sanitizeDegreesDouble(hue), chroma, math.clampDouble(0.0, 100.0, tone), ViewingConditions.make());
 }
 /**
  * @param hue CAM16 hue.
