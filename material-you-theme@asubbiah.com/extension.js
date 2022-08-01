@@ -23,7 +23,6 @@ const WALLPAPER_SCHEMA = 'org.gnome.desktop.background';
 
 const { GObject, St } = imports.gi;
 const {Gio, GLib, Soup, GdkPixbuf, Gdk} = imports.gi;
-const Lang = imports.lang;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
@@ -44,7 +43,6 @@ const PYTHONFILE = "apply_theme.py"
 const SETTINGSCHEMA = 'org.gnome.shell.extensions.material-you-theme';
 let DARKMODE = 'dark-mode';
 
-let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
     _init() {
@@ -58,7 +56,7 @@ class Indicator extends PanelMenu.Button {
         let dark_switch = new PopupMenu.PopupSwitchMenuItem(_('Dark Mode'), get_dark_mode(), { reactive: true });
         let refresh_btn = new PopupMenu.PopupMenuItem(_('Refresh Material Theme'));
 
-        dark_switch.connect('toggled', Lang.bind(this, function(object, value){
+        dark_switch.connect('toggled', (object, value) => {
 			// We will just change the text content of the label
 			if(value) {
 				set_dark_mode(true);
@@ -66,7 +64,7 @@ class Indicator extends PanelMenu.Button {
 				set_dark_mode(false);
 			}
             apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 64, height: 64});
-		}));
+		});
         refresh_btn.connect('activate', () => {
             apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 64, height: 64});
         });
@@ -98,10 +96,12 @@ function init(meta) {
 }
 
 function get_dark_mode() {
+    let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
     return settings.get_boolean(DARKMODE);
 }
 
 function set_dark_mode(bool) {
+    let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
     settings.set_boolean(DARKMODE, bool);
 }
 
