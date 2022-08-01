@@ -39,9 +39,8 @@ const { base_presets } = Me.imports.base_presets;
 const { color_mappings } = Me.imports.color_mappings;
 
 const EXTENSIONDIR = Me.dir.get_path();
-const PYTHONFILE = "apply_theme.py"
 const SETTINGSCHEMA = 'org.gnome.shell.extensions.material-you-theme';
-let DARKMODE = 'dark-mode';
+const DARKMODE = 'dark-mode';
 
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
