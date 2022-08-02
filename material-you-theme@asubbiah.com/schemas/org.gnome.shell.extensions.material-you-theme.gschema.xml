@@ -5,5 +5,8 @@
         <key name="dark-mode" type="b">
             <default>false</default>
         </key>
+        <key name="wallpaper-state" type="b">
+            <default>false</default>
+        </key>
     </schema>
 </schemalist>
