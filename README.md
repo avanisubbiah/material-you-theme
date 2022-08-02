@@ -14,7 +14,7 @@ NOTE: Using the extension now will theme your native installed libadwaita apps, 
 
 ### Libadwaita
 #### Native
-Themeing for native libadwaita will work by default.
+Theming for native libadwaita will work by default.
 #### Flatpak
 Install [Flatseal](https://github.com/tchx84/Flatseal), and add `xdg-config/gtk-4.0:ro` to **Other Files** under the category **Filesystem** in the **All Applications** section.
 
