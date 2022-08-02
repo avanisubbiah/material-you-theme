@@ -16,13 +16,21 @@ NOTE: Using the extension now will theme your native installed libadwaita apps, 
 #### Native
 Themeing for native libadwaita will work by default.
 #### Flatpak
-Install [Flatseal](https://github.com/tchx84/Flatseal), and add `xdg-config/gtk-4.0` to **Other Files** under the category **Filesystem** in the **All Applications** section.
+Install [Flatseal](https://github.com/tchx84/Flatseal), and add `xdg-config/gtk-4.0:ro` to **Other Files** under the category **Filesystem** in the **All Applications** section.
 
 ### GTK3
 #### Native
 Install the [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) theme and apply it.
 #### Flatpak
-After installing the [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) add `xdg-config/gtk-3.0` to **Other Files** under the category **Filesystem** in the **All Applications** section using [Flatseal](https://github.com/tchx84/Flatseal).
+After installing the [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) add `xdg-config/gtk-3.0:ro` to **Other Files** under the category **Filesystem** in the **All Applications** section using [Flatseal](https://github.com/tchx84/Flatseal).
 
 ## Usage
 Once the extension is enabled there will be a paint icon in the status area. Toggling Dark Mode will apply the appropriate material light/dark theme generated using your current wallpaper. If you change your wallpaper, you will need to click **Refresh Material Theme** to regenerate and reapply a new material light/dark theme.
+
+## Resetting
+To reset the applied theme you'll have to remove `~/.config/gtk-4.0/gtk.css` and `~/.config/gtk-3.0/gtk.css`, this can be achieved by running these commands:
+```
+rm ~/.config/gtk-4.0/gtk.css
+rm ~/.config/gtk-3.0/gtk.css
+```
+Additionally, if you applied the theme to flatpak you have to remove the `xdg-config/gtk-3.0:ro` and `xdg-config/gtk-4.0:ro` permissions using [Flatseal](https://github.com/tchx84/Flatseal) under the category **Filesystem** in the **All Applications** section.
