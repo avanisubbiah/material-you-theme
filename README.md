@@ -1,6 +1,8 @@
 # Material You Color Theming
 Applies generated libadwaita theme from wallpaper using Material You
 
+![extension-screenshot](https://imgur.com/a/TuahlYJ)
+
 ## Installation
 Copy the extension to your extensions folder (create the folder if it does not exist).
 ```
