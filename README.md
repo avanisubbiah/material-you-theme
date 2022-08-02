@@ -1,4 +1,4 @@
-# material-you-theme
+# Material You Color Theming
 Applies generated libadwaita theme from wallpaper using Material You
 
 ## Installation
