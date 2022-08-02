@@ -87,6 +87,9 @@ class Extension {
     disable() {
         this._indicator.destroy();
         this._indicator = null;
+        // Undoing changes to theme when disabling extension
+        delete_file(GLib.get_home_dir() + "/.config/gtk-4.0/gtk.css");
+        delete_file(GLib.get_home_dir() + "/.config/gtk-3.0/gtk.css");
     }
 }
 
@@ -174,6 +177,27 @@ async function create_dir(path) {
                 (file_, result) => {
                     try {
                         resolve(file.make_directory_finish(result));
+                    } catch (e) {
+                        reject(e);
+                    }
+                }
+            );
+        });
+    } catch (e) {
+        log(e);
+    }
+}
+
+async function delete_file(path) {
+    const file = Gio.File.new_for_path(path);
+    try {
+        await new Promise((resolve, reject) => {
+            file.delete_async(
+                GLib.PRIORITY_DEFAULT,
+                null,
+                (file_, result) => {
+                    try {
+                        resolve(file.delete_finish(result));
                     } catch (e) {
                         reject(e);
                     }
