@@ -20,6 +20,7 @@
 
 const GETTEXT_DOMAIN = 'my-indicator-extension';
 const WALLPAPER_SCHEMA = 'org.gnome.desktop.background';
+const INTERFACE_SCHEMA = 'org.gnome.desktop.interface';
 
 const { GObject, St } = imports.gi;
 const {Gio, GLib, Soup, GdkPixbuf, Gdk} = imports.gi;
@@ -39,8 +40,8 @@ const { base_presets } = Me.imports.base_presets;
 const { color_mappings } = Me.imports.color_mappings;
 
 const EXTENSIONDIR = Me.dir.get_path();
-const SETTINGSCHEMA = 'org.gnome.shell.extensions.material-you-theme';
-const DARKMODE = 'dark-mode';
+// const SETTINGSCHEMA = 'org.gnome.shell.extensions.material-you-theme';
+// const DARKMODE = 'dark-mode';
 
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
@@ -52,26 +53,26 @@ class Indicator extends PanelMenu.Button {
             style_class: 'system-status-icon',
         }));
 
-        let dark_switch = new PopupMenu.PopupSwitchMenuItem(_('Dark Mode'), get_dark_mode(), { reactive: true });
+        // let dark_switch = new PopupMenu.PopupSwitchMenuItem(_('Dark Mode'), get_dark_mode(), { reactive: true });
         let refresh_btn = new PopupMenu.PopupMenuItem(_('Refresh Material Theme'));
         let remove_btn = new PopupMenu.PopupMenuItem(_('Remove Material Theme'));
 
-        dark_switch.connect('toggled', (object, value) => {
-			// We will just change the text content of the label
-			if(value) {
-				set_dark_mode(true);
-			} else {
-				set_dark_mode(false);
-			}
-            apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 64, height: 64});
-		});
+        // dark_switch.connect('toggled', (object, value) => {
+		// 	// We will just change the text content of the label
+		// 	if(value) {
+		// 		set_dark_mode(true);
+		// 	} else {
+		// 		set_dark_mode(false);
+		// 	}
+        //     apply_theme(base_presets, color_mappings, {width: 64, height: 64});
+		// });
         refresh_btn.connect('activate', () => {
-            apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 64, height: 64});
+            apply_theme(base_presets, color_mappings, {width: 64, height: 64});
         });
         remove_btn.connect('activate', () => {
             remove_theme();
         });
-        this.menu.addMenuItem(dark_switch);
+        // this.menu.addMenuItem(dark_switch);
         this.menu.addMenuItem(refresh_btn);
         this.menu.addMenuItem(remove_btn);
     }
@@ -99,26 +100,33 @@ function init(meta) {
     return new Extension(meta.uuid);
 }
 
-function get_dark_mode() {
-    let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
-    return settings.get_boolean(DARKMODE);
-}
+// function get_dark_mode() {
+//     let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
+//     return settings.get_boolean(DARKMODE);
+// }
 
-function set_dark_mode(bool) {
-    let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
-    settings.set_boolean(DARKMODE, bool);
-}
+// function set_dark_mode(bool) {
+//     let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
+//     settings.set_boolean(DARKMODE, bool);
+// }
 
-function apply_theme(base_presets, color_mappings, is_dark = false, size) {
+function apply_theme(base_presets, color_mappings, size) {
+    // Checking dark theme preference
+    let is_dark = false;
+    let interface_settings = new Gio.Settings({ schema: INTERFACE_SCHEMA });
+    let dark_pref = interface_settings.get_string('color-scheme');
+    if (dark_pref === "prefer-dark") {
+        is_dark = true;
+    }
+
     // Getting Material theme from img
-    let gsettings = new Gio.Settings({ schema: WALLPAPER_SCHEMA });
+    let desktop_settings = new Gio.Settings({ schema: WALLPAPER_SCHEMA });
     let wall_uri_type = "";
     if (is_dark) {
         wall_uri_type = "-dark";
     }
-    let wall_uri = gsettings.get_string('picture-uri' + wall_uri_type);
+    let wall_uri = desktop_settings.get_string('picture-uri' + wall_uri_type);
     let wall_path = Gio.File.new_for_uri(wall_uri).get_path ()
-    log(wall_path);
     let pix_buf = GdkPixbuf.Pixbuf.new_from_file_at_size(wall_path, size.width, size.height);
     let theme = theme_utils.themeFromImage(pix_buf);
 

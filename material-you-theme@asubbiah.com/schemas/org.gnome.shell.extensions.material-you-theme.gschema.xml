@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<schemalist>
-    <schema id="org.gnome.shell.extensions.material-you-theme" path="/org/gnome/shell/extensions/material-you-theme/">
-        <!-- See also: https://docs.gtk.org/glib/gvariant-format-strings.html -->
-        <key name="dark-mode" type="b">
-            <default>false</default>
-        </key>
-    </schema>
-</schemalist>
