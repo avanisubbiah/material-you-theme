@@ -112,8 +112,13 @@ function set_dark_mode(bool) {
 function apply_theme(base_presets, color_mappings, is_dark = false, size) {
     // Getting Material theme from img
     let gsettings = new Gio.Settings({ schema: WALLPAPER_SCHEMA });
-    let wall_uri = gsettings.get_string('picture-uri');
+    let wall_uri_type = "";
+    if (is_dark) {
+        wall_uri_type = "-dark";
+    }
+    let wall_uri = gsettings.get_string('picture-uri' + wall_uri_type);
     let wall_path = Gio.File.new_for_uri(wall_uri).get_path ()
+    log(wall_path);
     let pix_buf = GdkPixbuf.Pixbuf.new_from_file_at_size(wall_path, size.width, size.height);
     let theme = theme_utils.themeFromImage(pix_buf);
 
