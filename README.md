@@ -33,4 +33,7 @@ Install the [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) theme and apply
 After installing the [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) add `xdg-config/gtk-3.0:ro` to **Other Files** under the category **Filesystem** in the **All Applications** section using [Flatseal](https://github.com/tchx84/Flatseal).
 
 ## Usage
-Once the extension is enabled there will be a paint icon in the status area. Toggling Dark Mode will apply the appropriate material light/dark theme generated using your current wallpaper. If you change your wallpaper, you will need to click **Refresh Material Theme** to regenerate and reapply a new material light/dark theme.
+Once the extension is enabled the extension will update your theme based on your current wallpaper and system dark mode preference. When you change your system dark mode preference or wallpaper the extension will automatically refresh your theme.
+
+## Uninstall
+Disabling the extension in your extension manager will undo theme changes back to default.
