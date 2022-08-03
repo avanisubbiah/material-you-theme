@@ -18,7 +18,6 @@
 
 /* exported init */
 
-const GETTEXT_DOMAIN = 'my-indicator-extension';
 const WALLPAPER_SCHEMA = 'org.gnome.desktop.background';
 const INTERFACE_SCHEMA = 'org.gnome.desktop.interface';
 
@@ -44,7 +43,7 @@ class Extension {
     constructor(uuid) {
         this._uuid = uuid;
 
-        ExtensionUtils.initTranslations(GETTEXT_DOMAIN);
+        ExtensionUtils.initTranslations();
     }
 
     enable() {
@@ -95,12 +94,12 @@ function apply_theme(base_presets, color_mappings, size) {
     let scheme = theme.schemes.light.props;
     let base_preset = base_presets.light;
     let color_mapping = color_mappings.light;
-    let theme_str = "Light";
+    let theme_str = _("Light");
     if (is_dark) {
         scheme = theme.schemes.dark.props;
         base_preset = base_presets.dark;
         color_mapping = color_mappings.dark;
-        theme_str = "Dark";
+        theme_str = _("Dark");
     }
 
     // Converting argb to hex
