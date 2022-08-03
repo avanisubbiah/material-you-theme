@@ -22,7 +22,6 @@ const GETTEXT_DOMAIN = 'my-indicator-extension';
 const WALLPAPER_SCHEMA = 'org.gnome.desktop.background';
 const INTERFACE_SCHEMA = 'org.gnome.desktop.interface';
 
-const { GObject, St } = imports.gi;
 const {Gio, GLib, Soup, GdkPixbuf, Gdk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -41,25 +40,6 @@ const { color_mappings } = Me.imports.color_mappings;
 
 const EXTENSIONDIR = Me.dir.get_path();
 
-const Indicator = GObject.registerClass(
-class Indicator extends PanelMenu.Button {
-    _init() {
-        super._init(0.0, _('My Shiny Indicator'));
-        this.add_child(new St.Icon({
-            icon_name: 'applications-graphics-symbolic',
-            style_class: 'system-status-icon',
-        }));
-
-        let remove_btn = new PopupMenu.PopupMenuItem(_('Remove Material Theme'));
-
-        remove_btn.connect('activate', () => {
-            remove_theme();
-        });
-
-        this.menu.addMenuItem(remove_btn);
-    }
-});
-
 class Extension {
     constructor(uuid) {
         this._uuid = uuid;
@@ -77,13 +57,13 @@ class Extension {
             apply_theme(base_presets, color_mappings, {width: 64, height: 64});
         });
 
-        this._indicator = new Indicator();
-        Main.panel.addToStatusArea(this._uuid, this._indicator);
+        apply_theme(base_presets, color_mappings, {width: 64, height: 64});
     }
 
     disable() {
         this._indicator.destroy();
         this._indicator = null;
+        remove_theme();
     }
 }
 
@@ -158,20 +138,12 @@ function apply_theme(base_presets, color_mappings, size) {
     create_dir(config_path + "/gtk-3.0");
     write_str(css, config_path + "/gtk-4.0/gtk.css");
     write_str(css, config_path + "/gtk-3.0/gtk.css");
-
-    // Notifying user on theme change
-    Main.notify("Applied Material You " + theme_str + " Theme",
-        "Some apps may require re-logging in to update");
 }
 
 function remove_theme() {
     // Undoing changes to theme when disabling extension
     delete_file(GLib.get_home_dir() + "/.config/gtk-4.0/gtk.css");
     delete_file(GLib.get_home_dir() + "/.config/gtk-3.0/gtk.css");
-
-    // Notifying user on theme removal
-    Main.notify("Removed Material You Theme",
-        "Some apps may require re-logging in to update");
 }
 
 async function create_dir(path) {
