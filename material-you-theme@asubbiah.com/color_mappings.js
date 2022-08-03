@@ -1,8 +1,8 @@
 var color_mappings = {
     "light": {
         "accent_color": { "color": "primary", "opacity": 1 },
-        "accent_bg_color": { "color": "primaryContainer", "opacity": 1 },
-        "accent_fg_color": { "color": "onPrimaryContainer", "opacity": 1 },
+        "accent_bg_color": { "color": "primary", "opacity": 1 },
+        "accent_fg_color": { "color": "onPrimary", "opacity": 1 },
         "window_bg_color": { "color": "surface", "opacity": 1 },
         "window_fg_color": { "color": "onSurface", "opacity": 1 },
         "view_bg_color": { "color": "surface", "opacity": 1 },
@@ -18,8 +18,8 @@ var color_mappings = {
     },
     "dark": {
         "accent_color": { "color": "primary", "opacity": 1 },
-        "accent_bg_color": { "color": "primaryContainer", "opacity": 1 },
-        "accent_fg_color": { "color": "onPrimaryContainer", "opacity": 1 },
+        "accent_bg_color": { "color": "primary", "opacity": 1 },
+        "accent_fg_color": { "color": "onPrimary", "opacity": 1 },
         "window_bg_color": { "color": "surface", "opacity": 1 },
         "window_fg_color": { "color": "onSurface", "opacity": 1 },
         "view_bg_color": { "color": "surface", "opacity": 1 },
