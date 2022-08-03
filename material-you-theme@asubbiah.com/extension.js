@@ -61,8 +61,6 @@ class Extension {
     }
 
     disable() {
-        this._indicator.destroy();
-        this._indicator = null;
         remove_theme();
     }
 }
