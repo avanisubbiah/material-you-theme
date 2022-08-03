@@ -40,40 +40,22 @@ const { base_presets } = Me.imports.base_presets;
 const { color_mappings } = Me.imports.color_mappings;
 
 const EXTENSIONDIR = Me.dir.get_path();
-// const SETTINGSCHEMA = 'org.gnome.shell.extensions.material-you-theme';
-// const DARKMODE = 'dark-mode';
 
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
     _init() {
         super._init(0.0, _('My Shiny Indicator'));
-        // face-smile-symbolic
         this.add_child(new St.Icon({
             icon_name: 'applications-graphics-symbolic',
             style_class: 'system-status-icon',
         }));
 
-        // let dark_switch = new PopupMenu.PopupSwitchMenuItem(_('Dark Mode'), get_dark_mode(), { reactive: true });
-        let refresh_btn = new PopupMenu.PopupMenuItem(_('Refresh Material Theme'));
         let remove_btn = new PopupMenu.PopupMenuItem(_('Remove Material Theme'));
 
-        // dark_switch.connect('toggled', (object, value) => {
-		// 	// We will just change the text content of the label
-		// 	if(value) {
-		// 		set_dark_mode(true);
-		// 	} else {
-		// 		set_dark_mode(false);
-		// 	}
-        //     apply_theme(base_presets, color_mappings, {width: 64, height: 64});
-		// });
-        refresh_btn.connect('activate', () => {
-            apply_theme(base_presets, color_mappings, {width: 64, height: 64});
-        });
         remove_btn.connect('activate', () => {
             remove_theme();
         });
-        // this.menu.addMenuItem(dark_switch);
-        this.menu.addMenuItem(refresh_btn);
+
         this.menu.addMenuItem(remove_btn);
     }
 });
@@ -86,6 +68,15 @@ class Extension {
     }
 
     enable() {
+        this._interfaceSettings = ExtensionUtils.getSettings(INTERFACE_SCHEMA);
+        this._interfaceSettings.connect('changed::color-scheme', () => {
+            apply_theme(base_presets, color_mappings, {width: 64, height: 64});
+        });
+        this._wallpaperSettings = ExtensionUtils.getSettings(WALLPAPER_SCHEMA);
+        this._wallpaperSettings.connect('changed::picture-uri', () => {
+            apply_theme(base_presets, color_mappings, {width: 64, height: 64});
+        });
+
         this._indicator = new Indicator();
         Main.panel.addToStatusArea(this._uuid, this._indicator);
     }
@@ -99,16 +90,6 @@ class Extension {
 function init(meta) {
     return new Extension(meta.uuid);
 }
-
-// function get_dark_mode() {
-//     let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
-//     return settings.get_boolean(DARKMODE);
-// }
-
-// function set_dark_mode(bool) {
-//     let settings = ExtensionUtils.getSettings(SETTINGSCHEMA);
-//     settings.set_boolean(DARKMODE, bool);
-// }
 
 function apply_theme(base_presets, color_mappings, size) {
     // Checking dark theme preference
