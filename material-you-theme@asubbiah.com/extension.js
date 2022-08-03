@@ -54,6 +54,7 @@ class Indicator extends PanelMenu.Button {
 
         let dark_switch = new PopupMenu.PopupSwitchMenuItem(_('Dark Mode'), get_dark_mode(), { reactive: true });
         let refresh_btn = new PopupMenu.PopupMenuItem(_('Refresh Material Theme'));
+        let remove_btn = new PopupMenu.PopupMenuItem(_('Remove Material Theme'));
 
         dark_switch.connect('toggled', (object, value) => {
 			// We will just change the text content of the label
@@ -67,8 +68,12 @@ class Indicator extends PanelMenu.Button {
         refresh_btn.connect('activate', () => {
             apply_theme(base_presets, color_mappings, get_dark_mode(), {width: 64, height: 64});
         });
+        remove_btn.connect('activate', () => {
+            remove_theme();
+        });
         this.menu.addMenuItem(dark_switch);
         this.menu.addMenuItem(refresh_btn);
+        this.menu.addMenuItem(remove_btn);
     }
 });
 
@@ -87,9 +92,6 @@ class Extension {
     disable() {
         this._indicator.destroy();
         this._indicator = null;
-        // Undoing changes to theme when disabling extension
-        delete_file(GLib.get_home_dir() + "/.config/gtk-4.0/gtk.css");
-        delete_file(GLib.get_home_dir() + "/.config/gtk-3.0/gtk.css");
     }
 }
 
@@ -165,6 +167,16 @@ function apply_theme(base_presets, color_mappings, is_dark = false, size) {
 
     // Notifying user on theme change
     Main.notify("Applied Material You " + theme_str + " Theme",
+        "Some apps may require re-logging in to update");
+}
+
+function remove_theme() {
+    // Undoing changes to theme when disabling extension
+    delete_file(GLib.get_home_dir() + "/.config/gtk-4.0/gtk.css");
+    delete_file(GLib.get_home_dir() + "/.config/gtk-3.0/gtk.css");
+
+    // Notifying user on theme removal
+    Main.notify("Removed Material You Theme",
         "Some apps may require re-logging in to update");
 }
 
