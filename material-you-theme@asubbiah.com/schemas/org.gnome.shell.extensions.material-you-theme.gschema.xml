@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema id="org.gnome.shell.extensions.material-you-theme" path="/org/gnome/shell/extensions/material-you-theme/">
+        <key name="show-notifications" type="b">
+            <default>true</default>
+            <summary>Show notifications</summary>
+        </key>
+    </schema>
+</schemalist>
