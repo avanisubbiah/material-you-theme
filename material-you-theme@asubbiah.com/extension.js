@@ -31,6 +31,7 @@ const PopupMenu = imports.ui.popupMenu;
 const _ = ExtensionUtils.gettext;
 
 const Me = ExtensionUtils.getCurrentExtension();
+const sass = Me.imports.sass_dart;
 const theme_utils = Me.imports.utils.theme_utils;
 const color_utils = Me.imports.utils.color_utils;
 const string_utils = Me.imports.utils.string_utils;
@@ -57,6 +58,11 @@ class Extension {
         });
 
         apply_theme(base_presets, color_mappings, {width: 64, height: 64});
+
+        // log(sussyfs.sussyfs.statSync(EXTENSIONDIR + "/extension.js").isFile());
+        // log(sussyfs.sussyfs.statSync(EXTENSIONDIR).isDirectory());
+        // log(sass);
+        log(sass.get_sass().compile(EXTENSIONDIR + "/theme/gnome-shell.scss"));
     }
 
     disable() {
