@@ -139,8 +139,8 @@ function apply_theme(base_presets, color_mappings, size) {
     write_str(css, config_path + "/gtk-3.0/gtk.css");
 
     // Notifying user on theme change
-    Main.notify("Applied Material You " + theme_str + " Theme",
-    "Some apps may require re-logging in to update");
+    // Main.notify("Applied Material You " + theme_str + " Theme",
+    // "Some apps may require re-logging in to update");
 }
 
 function remove_theme() {
@@ -149,8 +149,8 @@ function remove_theme() {
     delete_file(GLib.get_home_dir() + "/.config/gtk-3.0/gtk.css");
 
     // Notifying user on theme removal
-    Main.notify("Removed Material You Theme",
-    "Some apps may require re-logging in to update");
+    // Main.notify("Removed Material You Theme",
+    // "Some apps may require re-logging in to update");
 }
 
 async function create_dir(path) {
