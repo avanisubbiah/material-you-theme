@@ -56,6 +56,7 @@ class Extension {
             apply_theme(base_presets, color_mappings, {width: 64, height: 64});
         });
 
+        console.log("test-version of material extension");
         apply_theme(base_presets, color_mappings, {width: 64, height: 64});
     }
 
@@ -85,8 +86,10 @@ function apply_theme(base_presets, color_mappings, size) {
     if (is_dark) {
         wall_uri_type = "-dark";
     }
-    let wall_uri = desktop_settings.get_string('picture-uri' + wall_uri_type);
-    let wall_path = Gio.File.new_for_uri(wall_uri).get_path ()
+    let wall_path = desktop_settings.get_string('picture-uri' + wall_uri_type);
+    if (wall_path.includes("file://")) {
+        wall_path = Gio.File.new_for_uri(wall_path).get_path();
+    }
     let pix_buf = GdkPixbuf.Pixbuf.new_from_file_at_size(wall_path, size.width, size.height);
     let theme = theme_utils.themeFromImage(pix_buf);
 
