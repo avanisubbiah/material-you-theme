@@ -40,8 +40,6 @@ const { color_mappings } = Me.imports.color_mappings;
 
 const EXTENSIONDIR = Me.dir.get_path();
 
-let _showNotifications = true;
-
 class Extension {
     constructor(uuid) {
         this._uuid = uuid;
@@ -58,6 +56,10 @@ class Extension {
         this._wallpaperSettings.connect('changed::picture-uri', () => {
             apply_theme(base_presets, color_mappings, {width: 64, height: 64});
         });
+        this._prefsSettings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+        this._prefsSettings.connect('changed::vibrant', () => {
+            apply_theme(base_presets, color_mappings, {width: 64, height: 64});
+        });
 
         apply_theme(base_presets, color_mappings, {width: 64, height: 64});
     }
@@ -66,6 +68,7 @@ class Extension {
         remove_theme();
         this._interfaceSettings = null;
         this._wallpaperSettings = null;
+        this._prefsSettings = null;
     }
 }
 
@@ -74,6 +77,14 @@ function init(meta) {
 }
 
 function apply_theme(base_presets, color_mappings, size) {
+    // Get prefs
+    const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+    const vibrant = settings.get_boolean("vibrant");
+    let color_mappings_sel = color_mappings.default;
+    if (vibrant) {
+        color_mappings_sel = color_mappings.vibrant;
+    }
+
     // Checking dark theme preference
     let is_dark = false;
     let interface_settings = new Gio.Settings({ schema: INTERFACE_SCHEMA });
@@ -98,12 +109,12 @@ function apply_theme(base_presets, color_mappings, size) {
     // Configuring for light or dark theme
     let scheme = theme.schemes.light.props;
     let base_preset = base_presets.light;
-    let color_mapping = color_mappings.light;
+    color_mapping = color_mappings_sel.light;
     let theme_str = _("Light");
     if (is_dark) {
         scheme = theme.schemes.dark.props;
         base_preset = base_presets.dark;
-        color_mapping = color_mappings.dark;
+        color_mapping = color_mappings_sel.dark;
         theme_str = _("Dark");
     }
 
@@ -157,9 +168,6 @@ function apply_theme(base_presets, color_mappings, size) {
     write_str(css, config_path + "/gtk-4.0/gtk.css");
     write_str(css, config_path + "/gtk-3.0/gtk.css");
 
-    // Get prefs
-    const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
-    const show_notifications = settings.get_boolean("show-notifications");
 
     // Notifying user on theme change
     // Main.notify("Applied Material You " + theme_str + " Theme",
@@ -172,8 +180,8 @@ function remove_theme() {
     delete_file(GLib.get_home_dir() + "/.config/gtk-3.0/gtk.css");
 
     // Get prefs
-    const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
-    const show_notifications = settings.get_boolean("show-notifications");
+    // const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+    // const show_notifications = settings.get_boolean("show-notifications");
 
     // Notifying user on theme removal
     // Main.notify("Removed Material You Theme",

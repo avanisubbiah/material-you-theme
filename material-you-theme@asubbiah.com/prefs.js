@@ -16,25 +16,25 @@ function fillPreferencesWindow(window) {
     page.add(group);
 
     // TODO: internationalize
-    const show_notifications_row = new Adw.ActionRow({
-        title: "Show Notifications",
+    const vibrant_row = new Adw.ActionRow({
+        title: "Use Vibrant Material You Colors",
     });
-    group.add(show_notifications_row);
+    group.add(vibrant_row);
 
     // Create the switch and bind its value
-    const show_notifications_toggle = new Gtk.Switch({
-        active: settings.get_boolean("show-notifications"),
+    const vibrant_toggle = new Gtk.Switch({
+        active: settings.get_boolean("vibrant"),
         valign: Gtk.Align.CENTER,
     });
     settings.bind(
-        "show-notifications",
-        show_notifications_toggle,
+        "vibrant",
+        vibrant_toggle,
         "active",
         Gio.SettingsBindFlags.DEFAULT
     );
 
-    show_notifications_row.add_suffix(show_notifications_toggle);
-    show_notifications_row.activatable_widget = show_notifications_toggle;
+    vibrant_row.add_suffix(vibrant_toggle);
+    vibrant_row.activatable_widget = vibrant_toggle;
 
     // Add our page to the window
     window.add(page);
