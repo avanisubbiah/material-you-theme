@@ -146,10 +146,8 @@ function apply_theme(base_presets, color_mappings, size) {
     const show_notifications = settings.get_boolean("show-notifications");
 
     // Notifying user on theme change
-    if (show_notifications) {
-        Main.notify("Applied Material You " + theme_str + " Theme",
-        "Some apps may require re-logging in to update");
-    }
+    // Main.notify("Applied Material You " + theme_str + " Theme",
+    // "Some apps may require re-logging in to update");
 }
 
 function remove_theme() {
@@ -162,10 +160,8 @@ function remove_theme() {
     const show_notifications = settings.get_boolean("show-notifications");
 
     // Notifying user on theme removal
-    if (show_notifications) {
-        Main.notify("Removed Material You Theme",
-        "Some apps may require re-logging in to update");
-    }
+    // Main.notify("Removed Material You Theme",
+    // "Some apps may require re-logging in to update");
 }
 
 async function create_dir(path) {
