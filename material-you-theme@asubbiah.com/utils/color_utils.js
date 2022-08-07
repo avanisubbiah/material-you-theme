@@ -51,6 +51,11 @@ function argbFromRgb(red, green, blue) {
     return (255 << 24 | (red & 255) << 16 | (green & 255) << 8 | blue & 255) >>>
         0;
 }
+
+function argbFromRgba(red, green, blue, alpha) {
+    return ((Math.round(255 * alpha)) << 24 | (red & 255) << 16 | (green & 255) << 8 | blue & 255) >>>
+    0;
+}
 /**
  * Returns the alpha component of a color in ARGB format.
  */
@@ -269,5 +274,30 @@ function labInvf(ft) {
     else {
         return (116 * ft - 16) / kappa;
     }
+}
+
+function rgbaArrFromArgb(argb) {
+    return [
+                redFromArgb(argb),
+                greenFromArgb(argb),
+                blueFromArgb(argb),
+                alphaFromArgb(argb) / 255
+            ];
+}
+
+function blendArgb(base, added) {
+    var base = rgbaArrFromArgb(base);
+    var added = rgbaArrFromArgb(added);
+
+    var mix = [];
+    mix[3] = 1 - (1 - added[3]) * (1 - base[3]); // alpha
+    mix[0] = Math.round((added[0] * added[3] / mix[3])
+                 + (base[0] * base[3] * (1 - added[3]) / mix[3])); // red
+    mix[1] = Math.round((added[1] * added[3] / mix[3])
+                 + (base[1] * base[3] * (1 - added[3]) / mix[3])); // green
+    mix[2] = Math.round((added[2] * added[3] / mix[3])
+                 + (base[2] * base[3] * (1 - added[3]) / mix[3])); // blue
+
+    return argbFromRgb(mix[0], mix[1], mix[2]);
 }
 //# sourceMappingURL=color_utils.js.map

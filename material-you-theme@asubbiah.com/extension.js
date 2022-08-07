@@ -56,7 +56,6 @@ class Extension {
             apply_theme(base_presets, color_mappings, {width: 64, height: 64});
         });
 
-        console.log("test-version of material extension");
         apply_theme(base_presets, color_mappings, {width: 64, height: 64});
     }
 
@@ -105,22 +104,34 @@ function apply_theme(base_presets, color_mappings, size) {
         theme_str = _("Dark");
     }
 
-    // Converting argb to hex
-    for (const key in scheme) {
-        scheme[key] = '#' + scheme[key].toString(16).substring(2);
-    }
-
     // Overwritting keys in base_preset with material colors
     for (const key in color_mapping) {
-        if (color_mapping[key].opacity == 1) {
-            base_preset.variables[key] = scheme[color_mapping[key].color];
+        if (!Array.isArray(color_mapping[key])) {
+            if (color_mapping[key].opacity == 1) {
+                base_preset.variables[key] = string_utils.hexFromArgb(scheme[color_mapping[key].color]);
+            } else {
+                let argb = scheme[color_mapping[key].color];
+                let r = color_utils.redFromArgb(argb);
+                let g = color_utils.greenFromArgb(argb);
+                let b = color_utils.blueFromArgb(argb);
+                rgba_str = "rgba(" + r + ", " + g + ", " + b + ", " + color_mapping[key].opacity + ")"
+                base_preset.variables[key] = rgba_str;
+            }
         } else {
-            let argb = string_utils.argbFromHex(scheme[color_mapping[key].color]);
-            let r = color_utils.redFromArgb(argb);
-            let g = color_utils.greenFromArgb(argb);
-            let b = color_utils.blueFromArgb(argb);
-            rgba_str = "rgba(" + r + ", " + g + ", " + b + ", " + color_mapping[key].opacity + ")"
-            base_preset.variables[key] = rgba_str;
+            if (color_mapping[key].length > 0) {
+                total_color = scheme[color_mapping[key][0].color]; // Setting base color
+                // Mixing in added colors
+                for (let i = 1; i < color_mapping[key].length; i++) {
+                    let argb = scheme[color_mapping[key][i].color];
+                    let r = color_utils.redFromArgb(argb);
+                    let g = color_utils.greenFromArgb(argb);
+                    let b = color_utils.blueFromArgb(argb);
+                    let a = color_mapping[key][i].opacity;
+                    let added_color = color_utils.argbFromRgba(r, g, b, a);
+                    total_color = color_utils.blendArgb(total_color, added_color);
+                }
+                base_preset.variables[key] = string_utils.hexFromArgb(total_color);
+            }
         }
     }
 
