@@ -20,6 +20,7 @@
 
 const WALLPAPER_SCHEMA = 'org.gnome.desktop.background';
 const INTERFACE_SCHEMA = 'org.gnome.desktop.interface';
+const PREFS_SCHEMA = 'org.gnome.shell.extensions.material-you-theme';
 
 const {Gio, GLib, Soup, GdkPixbuf, Gdk} = imports.gi;
 
@@ -38,6 +39,8 @@ const { base_presets } = Me.imports.base_presets;
 const { color_mappings } = Me.imports.color_mappings;
 
 const EXTENSIONDIR = Me.dir.get_path();
+
+let _showNotifications = true;
 
 class Extension {
     constructor(uuid) {
@@ -104,7 +107,9 @@ function apply_theme(base_presets, color_mappings, size) {
         theme_str = _("Dark");
     }
 
+
     // Overwritting keys in base_preset with material colors
+
     for (const key in color_mapping) {
         if (!Array.isArray(color_mapping[key])) {
             if (color_mapping[key].opacity == 1) {
@@ -152,6 +157,10 @@ function apply_theme(base_presets, color_mappings, size) {
     write_str(css, config_path + "/gtk-4.0/gtk.css");
     write_str(css, config_path + "/gtk-3.0/gtk.css");
 
+    // Get prefs
+    const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+    const show_notifications = settings.get_boolean("show-notifications");
+
     // Notifying user on theme change
     // Main.notify("Applied Material You " + theme_str + " Theme",
     // "Some apps may require re-logging in to update");
@@ -161,6 +170,10 @@ function remove_theme() {
     // Undoing changes to theme when disabling extension
     delete_file(GLib.get_home_dir() + "/.config/gtk-4.0/gtk.css");
     delete_file(GLib.get_home_dir() + "/.config/gtk-3.0/gtk.css");
+
+    // Get prefs
+    const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+    const show_notifications = settings.get_boolean("show-notifications");
 
     // Notifying user on theme removal
     // Main.notify("Removed Material You Theme",
