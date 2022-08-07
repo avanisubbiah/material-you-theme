@@ -88,10 +88,8 @@ function apply_theme(base_presets, color_mappings, size) {
     if (is_dark) {
         wall_uri_type = "-dark";
     }
-    let wall_path = desktop_settings.get_string('picture-uri' + wall_uri_type);
-    if (wall_path.includes("file://")) {
-        wall_path = Gio.File.new_for_uri(wall_path).get_path();
-    }
+    let wall_uri = desktop_settings.get_string('picture-uri' + wall_uri_type);
+    let wall_path = Gio.File.new_for_uri(wall_uri).get_path ()
     let pix_buf = GdkPixbuf.Pixbuf.new_from_file_at_size(wall_path, size.width, size.height);
     let theme = theme_utils.themeFromImage(pix_buf);
 
@@ -107,36 +105,22 @@ function apply_theme(base_presets, color_mappings, size) {
         theme_str = _("Dark");
     }
 
+    // Converting argb to hex
+    for (const key in scheme) {
+        scheme[key] = '#' + scheme[key].toString(16).substring(2);
+    }
 
-    // Overwritting keys in base_preset with material colors
-
+    // Overwriting keys in base_preset with material colors
     for (const key in color_mapping) {
-        if (!Array.isArray(color_mapping[key])) {
-            if (color_mapping[key].opacity == 1) {
-                base_preset.variables[key] = string_utils.hexFromArgb(scheme[color_mapping[key].color]);
-            } else {
-                let argb = scheme[color_mapping[key].color];
-                let r = color_utils.redFromArgb(argb);
-                let g = color_utils.greenFromArgb(argb);
-                let b = color_utils.blueFromArgb(argb);
-                rgba_str = "rgba(" + r + ", " + g + ", " + b + ", " + color_mapping[key].opacity + ")"
-                base_preset.variables[key] = rgba_str;
-            }
+        if (color_mapping[key].opacity == 1) {
+            base_preset.variables[key] = scheme[color_mapping[key].color];
         } else {
-            if (color_mapping[key].length > 0) {
-                total_color = scheme[color_mapping[key][0].color]; // Setting base color
-                // Mixing in added colors
-                for (let i = 1; i < color_mapping[key].length; i++) {
-                    let argb = scheme[color_mapping[key][i].color];
-                    let r = color_utils.redFromArgb(argb);
-                    let g = color_utils.greenFromArgb(argb);
-                    let b = color_utils.blueFromArgb(argb);
-                    let a = color_mapping[key][i].opacity;
-                    let added_color = color_utils.argbFromRgba(r, g, b, a);
-                    total_color = color_utils.blendArgb(total_color, added_color);
-                }
-                base_preset.variables[key] = string_utils.hexFromArgb(total_color);
-            }
+            let argb = string_utils.argbFromHex(scheme[color_mapping[key].color]);
+            let r = color_utils.redFromArgb(argb);
+            let g = color_utils.greenFromArgb(argb);
+            let b = color_utils.blueFromArgb(argb);
+            rgba_str = "rgba(" + r + ", " + g + ", " + b + ", " + color_mapping[key].opacity + ")"
+            base_preset.variables[key] = rgba_str;
         }
     }
 
