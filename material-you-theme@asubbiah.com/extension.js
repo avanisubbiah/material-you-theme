@@ -16,13 +16,13 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-/* exported init */
+/* exported init, PREFS_SCHEMA */
 
 const WALLPAPER_SCHEMA = 'org.gnome.desktop.background';
 const INTERFACE_SCHEMA = 'org.gnome.desktop.interface';
 const PREFS_SCHEMA = 'org.gnome.shell.extensions.material-you-theme';
 
-const {Gio, GLib, Soup, GdkPixbuf, Gdk} = imports.gi;
+const { Gio, GLib, Soup, GdkPixbuf, Gdk } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
@@ -79,9 +79,9 @@ function init(meta) {
 function apply_theme(base_presets, color_mappings, size) {
     // Get prefs
     const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
-    const vibrant = settings.get_boolean("vibrant");
+    const color_scheme = settings.get_string("scheme");
     let color_mappings_sel = color_mappings.default;
-    if (vibrant) {
+    if (color_scheme === "Vibrant") {
         color_mappings_sel = color_mappings.vibrant;
     }
 
@@ -119,7 +119,7 @@ function apply_theme(base_presets, color_mappings, size) {
     }
 
 
-    // Overwritting keys in base_preset with material colors
+    // Overwriting keys in base_preset with material colors
 
     for (const key in color_mapping) {
         if (!Array.isArray(color_mapping[key])) {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
     <schema id="org.gnome.shell.extensions.material-you-theme" path="/org/gnome/shell/extensions/material-you-theme/">
-        <key name="vibrant" type="b">
-            <default>false</default>
-            <summary>Use vibrant Material You Colors</summary>
+        <key name="scheme" type="s">
+            <default>"Default"</default>
+            <summary>Current color scheme</summary>
         </key>
     </schema>
 </schemalist>
