@@ -15,7 +15,7 @@ class ColorSchemeRow extends Adw.ActionRow {
         GObject.registerClass(this);
     }
 
-    constructor(name) {
+    constructor(name, style_subtitle) {
         const check = new Gtk.CheckButton({
             action_name: "color.scheme",
             action_target: new GLib.Variant("s", name),
@@ -23,6 +23,7 @@ class ColorSchemeRow extends Adw.ActionRow {
 
         super({
             title: name,
+            subtitle: style_subtitle,
             activatable_widget: check,
         });
         this.add_prefix(check);
@@ -45,15 +46,65 @@ class ColorSchemeGroup extends Adw.PreferencesGroup {
 
         this.connect("destroy", () => this._settings.run_dispose());
 
-        this._addTheme("Default");
-        this._addTheme("Vibrant");
-        this._addTheme("Expressive");
-        this._addTheme("Fruit Salad");
-        this._addTheme("Muted");
+        this._addTheme("Default", "Balanced Material You colors");
+        this._addTheme("Vibrant", "Slightly varying colors most colorful");
+        this._addTheme("Expressive", "Diverse colors that work well together");
+        this._addTheme("Fruit Salad", "Main color that works well with a different color background");
+        this._addTheme("Muted", "Calm, muted colors that are consistent");
     }
 
-    _addTheme(name) {
-        const row = new ColorSchemeRow(name);
+    _addTheme(name, style_subtitle) {
+        const row = new ColorSchemeRow(name, style_subtitle);
+        this.add(row);
+    }
+}
+
+class MiscRow extends Adw.ActionRow {
+    static {
+        GObject.registerClass(this);
+    }
+
+    constructor(name, settings, option_title) {
+        const widget = new Gtk.Switch({
+            active: settings.get_boolean(name),
+            valign: Gtk.Align.CENTER,
+        });
+
+        settings.bind(
+            name,
+            widget,
+            "active",
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        super({
+            title: option_title,
+            activatable_widget: widget,
+        });
+        this.add_suffix(widget);
+    }
+}
+
+class MiscGroup extends Adw.PreferencesGroup {
+    static {
+        GObject.registerClass(this);
+    }
+
+    constructor() {
+        super({ title: "Options" });
+
+        this._actionGroup = new Gio.SimpleActionGroup();
+        this.insert_action_group("misc", this._actionGroup);
+
+        this._settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+
+        this.connect("destroy", () => this._settings.run_dispose());
+
+        this._addOption("show-notifications", this._settings, "Show Notifications");
+    }
+
+    _addOption(name, settings, option_title) {
+        const row = new MiscRow(name, settings, option_title);
         this.add(row);
     }
 }
@@ -63,6 +114,35 @@ function fillPreferencesWindow(window) {
     const page = new Adw.PreferencesPage();
     const color_scheme_group = new ColorSchemeGroup();
     page.add(color_scheme_group);
+    const misc_settings_group = new MiscGroup();
+    page.add(misc_settings_group);
+
+    // const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+
+    // // Create a preferences page and group
+    // const group = new Adw.PreferencesGroup();
+    // page.add(group);
+
+    // // TODO: internationalize
+    // const show_notifications_row = new Adw.ActionRow({
+    //     title: "Show Notifications",
+    // });
+    // group.add(show_notifications_row);
+
+    // // Create the switch and bind its value
+    // const show_notifications_toggle = new Gtk.Switch({
+    //     active: settings.get_boolean("show-notifications"),
+    //     valign: Gtk.Align.CENTER,
+    // });
+    // settings.bind(
+    //     "show-notifications",
+    //     show_notifications_toggle,
+    //     "active",
+    //     Gio.SettingsBindFlags.DEFAULT
+    // );
+
+    // show_notifications_row.add_suffix(show_notifications_toggle);
+    // show_notifications_row.activatable_widget = show_notifications_toggle;
 
     // Add our page to the window
     window.add(page);

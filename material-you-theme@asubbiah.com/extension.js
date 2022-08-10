@@ -50,15 +50,15 @@ class Extension {
     enable() {
         this._interfaceSettings = ExtensionUtils.getSettings(INTERFACE_SCHEMA);
         this._interfaceSettings.connect('changed::color-scheme', () => {
-            apply_theme(base_presets, color_mappings, {width: 64, height: 64});
+            apply_theme(base_presets, color_mappings, {width: 64, height: 64}, true);
         });
         this._wallpaperSettings = ExtensionUtils.getSettings(WALLPAPER_SCHEMA);
         this._wallpaperSettings.connect('changed::picture-uri', () => {
-            apply_theme(base_presets, color_mappings, {width: 64, height: 64});
+            apply_theme(base_presets, color_mappings, {width: 64, height: 64}, true);
         });
         this._prefsSettings = ExtensionUtils.getSettings(PREFS_SCHEMA);
         this._prefsSettings.connect('changed::scheme', () => {
-            apply_theme(base_presets, color_mappings, {width: 64, height: 64});
+            apply_theme(base_presets, color_mappings, {width: 64, height: 64}, true);
         });
 
         apply_theme(base_presets, color_mappings, {width: 64, height: 64});
@@ -76,10 +76,11 @@ function init(meta) {
     return new Extension(meta.uuid);
 }
 
-function apply_theme(base_presets, color_mappings, size) {
+function apply_theme(base_presets, color_mappings, size, notify=false) {
     // Get prefs
     const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
     const color_scheme = settings.get_string("scheme");
+    const show_notifications = settings.get_boolean("show-notifications");
     let color_mappings_sel = color_mappings[color_scheme.toLowerCase()];
 
     // Checking dark theme preference
@@ -167,8 +168,10 @@ function apply_theme(base_presets, color_mappings, size) {
 
 
     // Notifying user on theme change
-    // Main.notify("Applied Material You " + theme_str + " Theme",
-    // "Some apps may require re-logging in to update");
+    if (notify && show_notifications) {
+        Main.notify("Applied Material You " + color_scheme + " " + theme_str + " Theme",
+            "Some apps may require re-logging in to update");
+    }
 }
 
 function remove_theme() {

@@ -5,5 +5,9 @@
             <default>"Default"</default>
             <summary>Current color scheme</summary>
         </key>
+        <key name="show-notifications" type="b">
+            <default>true</default>
+            <summary>Show notifications on theme update</summary>
+        </key>
     </schema>
 </schemalist>
