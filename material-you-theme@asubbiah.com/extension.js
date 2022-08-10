@@ -57,7 +57,7 @@ class Extension {
             apply_theme(base_presets, color_mappings, {width: 64, height: 64});
         });
         this._prefsSettings = ExtensionUtils.getSettings(PREFS_SCHEMA);
-        this._prefsSettings.connect('changed::vibrant', () => {
+        this._prefsSettings.connect('changed::scheme', () => {
             apply_theme(base_presets, color_mappings, {width: 64, height: 64});
         });
 
