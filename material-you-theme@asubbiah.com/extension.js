@@ -80,10 +80,7 @@ function apply_theme(base_presets, color_mappings, size) {
     // Get prefs
     const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
     const color_scheme = settings.get_string("scheme");
-    let color_mappings_sel = color_mappings.default;
-    if (color_scheme === "Vibrant") {
-        color_mappings_sel = color_mappings.vibrant;
-    }
+    let color_mappings_sel = color_mappings[color_scheme.toLowerCase()];
 
     // Checking dark theme preference
     let is_dark = false;

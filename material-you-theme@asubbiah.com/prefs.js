@@ -47,6 +47,8 @@ class ColorSchemeGroup extends Adw.PreferencesGroup {
 
         this._addTheme("Default");
         this._addTheme("Vibrant");
+        this._addTheme("Expressive");
+        this._addTheme("Muted");
     }
 
     _addTheme(name) {
