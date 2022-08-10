@@ -9,5 +9,13 @@
             <default>true</default>
             <summary>Show notifications on theme update</summary>
         </key>
+        <key name="resize-width" type="i">
+            <default>64</default>
+            <summary>Width to resize wallpaper to</summary>
+        </key>
+        <key name="resize-height" type="i">
+            <default>64</default>
+            <summary>Height to resize wallpaper to</summary>
+        </key>
     </schema>
 </schemalist>

@@ -59,12 +59,12 @@ class ColorSchemeGroup extends Adw.PreferencesGroup {
     }
 }
 
-class MiscRow extends Adw.ActionRow {
+class MiscToggleRow extends Adw.ActionRow {
     static {
         GObject.registerClass(this);
     }
 
-    constructor(name, settings, option_title) {
+    constructor(name, settings, title) {
         const widget = new Gtk.Switch({
             active: settings.get_boolean(name),
             valign: Gtk.Align.CENTER,
@@ -78,7 +78,38 @@ class MiscRow extends Adw.ActionRow {
         );
 
         super({
-            title: option_title,
+            title: title,
+            activatable_widget: widget,
+        });
+        this.add_suffix(widget);
+    }
+}
+
+class MiscSpinnerRow extends Adw.ActionRow {
+    static {
+        GObject.registerClass(this);
+    }
+
+    constructor(name, settings, title, subtitle, min, max, inc) {
+        const widget = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({
+                lower: min,
+                upper: max,
+                step_increment: inc,
+            }),
+            valign: Gtk.Align.CENTER,
+        });
+
+        settings.bind(
+            name,
+            widget,
+            "value",
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        super({
+            title: title,
+            subtitle:  subtitle,
             activatable_widget: widget,
         });
         this.add_suffix(widget);
@@ -100,11 +131,20 @@ class MiscGroup extends Adw.PreferencesGroup {
 
         this.connect("destroy", () => this._settings.run_dispose());
 
-        this._addOption("show-notifications", this._settings, "Show Notifications");
+        this._addToggle("show-notifications", this._settings, "Show Notifications");
+        this._addSpinner("resize-width", this._settings, "Wallpaper Sampling Width",
+                         "Width to resize sample to, higher values may cause slowdown", 8, 4096, 1);
+        this._addSpinner("resize-height", this._settings, "Wallpaper Sampling Height",
+                         "Height to resize sample to, higher values may cause slowdown", 8, 4096, 1);
     }
 
-    _addOption(name, settings, option_title) {
-        const row = new MiscRow(name, settings, option_title);
+    _addToggle(name, settings, title) {
+        const row = new MiscToggleRow(name, settings, title);
+        this.add(row);
+    }
+
+    _addSpinner(name, settings, title, subtitle, min, max, inc) {
+        const row = new MiscSpinnerRow(name, settings, title, subtitle, min, max, inc);
         this.add(row);
     }
 }
