@@ -6,6 +6,9 @@ const { Adw, Gio, GLib, GObject, Gtk } = imports.gi;
 function init() {}
 
 const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+const EXTENSIONDIR = Me.dir.get_path();
+// const npm_utils = Me.imports.npm_utils;
 
 const PREFS_SCHEMA = "org.gnome.shell.extensions.material-you-theme";
 
@@ -55,6 +58,55 @@ class ColorSchemeGroup extends Adw.PreferencesGroup {
 
     _addTheme(name, style_subtitle) {
         const row = new ColorSchemeRow(name, style_subtitle);
+        this.add(row);
+    }
+}
+
+class SassInstallRow extends Adw.ActionRow {
+    static {
+        GObject.registerClass(this);
+    }
+
+    constructor(name, title, subtitle) {
+        const button = new Gtk.Button({
+            label: "Install",
+            valign: Gtk.Align.CENTER,
+        });
+
+        button.connect('clicked', () => {
+            log('The button was clicked!');
+            log(name);
+            log(EXTENSIONDIR);
+            install_npm_deps();
+            // npm_utils.install_npm_deps();
+        });
+
+        super({
+            title: title,
+            subtitle: subtitle,
+            activatable_widget: button,
+        });
+        this.add_suffix(button);
+    }
+}
+
+class SassGroup extends Adw.PreferencesGroup {
+    static {
+        GObject.registerClass(this);
+    }
+
+    constructor() {
+        super({ title: "Enable Gnome Shell Theming" });
+
+        this._settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+
+        this.connect("destroy", () => this._settings.run_dispose());
+
+        this._addSassInstall("request-install", "Install Sass with npm", "Requires nodejs and npm to already be installed");
+    }
+
+    _addSassInstall(name, title, subtitle) {
+        const row = new SassInstallRow(name, title, subtitle);
         this.add(row);
     }
 }
@@ -152,6 +204,8 @@ class MiscGroup extends Adw.PreferencesGroup {
 function fillPreferencesWindow(window) {
     // Create a preferences page and group
     const page = new Adw.PreferencesPage();
+    const sass_group = new SassGroup();
+    page.add(sass_group);
     const color_scheme_group = new ColorSchemeGroup();
     page.add(color_scheme_group);
     const misc_settings_group = new MiscGroup();
@@ -186,4 +240,24 @@ function fillPreferencesWindow(window) {
 
     // Add our page to the window
     window.add(page);
+}
+
+function install_npm_deps() {
+    try {
+        // The process starts running immediately after this function is called. Any
+        // error thrown here will be a result of the process failing to start, not
+        // the success or failure of the process itself.
+        let proc = Gio.Subprocess.new(
+            // The program and command options are passed as a list of arguments
+            ['npm', 'install', '--prefix', EXTENSIONDIR],
+    
+            // The flags control what I/O pipes are opened and how they are directed
+            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
+        );
+    
+        // Once the process has started, you can end it with `force_exit()`
+        // proc.force_exit();
+    } catch (e) {
+        logError(e);
+    }
 }

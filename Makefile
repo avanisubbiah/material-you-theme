@@ -12,6 +12,7 @@ build:
 		--extra-source=utils \
 		--extra-source=base_presets.js \
 		--extra-source=color_mappings.js \
+		--extra-source=package.json \
 		-o .
 
 install:
