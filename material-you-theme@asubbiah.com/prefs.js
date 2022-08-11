@@ -74,9 +74,6 @@ class SassInstallRow extends Adw.ActionRow {
         });
 
         button.connect('clicked', () => {
-            log('The button was clicked!');
-            log(name);
-            log(EXTENSIONDIR);
             install_npm_deps();
             // npm_utils.install_npm_deps();
         });
@@ -211,34 +208,6 @@ function fillPreferencesWindow(window) {
     const misc_settings_group = new MiscGroup();
     page.add(misc_settings_group);
 
-    // const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
-
-    // // Create a preferences page and group
-    // const group = new Adw.PreferencesGroup();
-    // page.add(group);
-
-    // // TODO: internationalize
-    // const show_notifications_row = new Adw.ActionRow({
-    //     title: "Show Notifications",
-    // });
-    // group.add(show_notifications_row);
-
-    // // Create the switch and bind its value
-    // const show_notifications_toggle = new Gtk.Switch({
-    //     active: settings.get_boolean("show-notifications"),
-    //     valign: Gtk.Align.CENTER,
-    // });
-    // settings.bind(
-    //     "show-notifications",
-    //     show_notifications_toggle,
-    //     "active",
-    //     Gio.SettingsBindFlags.DEFAULT
-    // );
-
-    // show_notifications_row.add_suffix(show_notifications_toggle);
-    // show_notifications_row.activatable_widget = show_notifications_toggle;
-
-    // Add our page to the window
     window.add(page);
 }
 

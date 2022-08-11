@@ -20,6 +20,7 @@
 
 const WALLPAPER_SCHEMA = 'org.gnome.desktop.background';
 const INTERFACE_SCHEMA = 'org.gnome.desktop.interface';
+const SHELL_SCHEMA = 'org.gnome.shell.extensions.user-theme';
 const PREFS_SCHEMA = 'org.gnome.shell.extensions.material-you-theme';
 
 const { Gio, GLib, Soup, GdkPixbuf, Gdk } = imports.gi;
@@ -59,6 +60,14 @@ class Extension {
         this._prefsSettings = ExtensionUtils.getSettings(PREFS_SCHEMA);
         this._prefsSettings.connect('changed::scheme', () => {
             apply_theme(base_presets, color_mappings, true);
+        });
+        this._shellSettings = ExtensionUtils.getSettings(SHELL_SCHEMA);
+        this._shellSettings.connect('changed::name', () => {
+            // log("shell settings theme changed");
+            // log(this._shellSettings.get_string("name"));
+            if (this._shellSettings.get_string("name") === "reset") {
+                this._shellSettings.set_string("name", "MaterialYou");
+            }
         });
 
         apply_theme(base_presets, color_mappings);
@@ -169,6 +178,16 @@ function apply_theme(base_presets, color_mappings, notify=false) {
     write_str(css, config_path + "/gtk-4.0/gtk.css");
     write_str(css, config_path + "/gtk-3.0/gtk.css");
 
+    if (check_npm()) {
+        modify_colors(EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.txt',
+            EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.scss',
+            base_preset.variables
+        );
+        create_dir(GLib.get_home_dir() + '/.local/share/themes/MaterialYou');
+        create_dir(GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell');
+        compile_sass(EXTENSIONDIR + '/shell/42/gnome-shell.scss',
+            GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell/gnome-shell.css');
+    }
 
     // Notifying user on theme change
     if (notify && show_notifications) {
@@ -255,4 +274,86 @@ async function write_str(str, path) {
     } catch (e) {
         log(e);
     }
+}
+
+function read_file(path) {
+    const file = Gio.File.new_for_path(path);
+    const [, contents, etag] = file.load_contents(null);
+    const decoder = new TextDecoder('utf-8');
+    const contentsString = decoder.decode(contents);
+
+    return contentsString;
+}
+
+function check_npm() {
+    const file = Gio.File.new_for_path(EXTENSIONDIR + "/node_modules/sass/sass.js");
+    return file.query_exists(null);
+}
+
+function modify_colors(scss_path, output_path, vars) {
+    let colors_template = read_file(scss_path);
+    for (const key in vars) {
+        colors_template = colors_template.replace("{{" + key + "}}", vars[key]);
+    }
+    write_str(colors_template, output_path);
+}
+
+function compile_sass(scss_path, output_path) {
+    let shell_settings = ExtensionUtils.getSettings(SHELL_SCHEMA);
+
+    let loop = GLib.MainLoop.new(null, false);
+
+    try {
+        let proc = Gio.Subprocess.new(
+            [EXTENSIONDIR + '/node_modules/sass/sass.js', scss_path, output_path],
+            Gio.SubprocessFlags.NONE
+        );
+
+        // NOTE: triggering the cancellable passed to these functions will only
+        //       cancel the function NOT the process.
+        let cancellable = new Gio.Cancellable();
+
+        proc.wait_async(cancellable, (proc, result) => {
+            try {
+                // Strictly speaking, the only error that can be thrown by this
+                // function is Gio.IOErrorEnum.CANCELLED.
+                proc.wait_finish(result);
+
+                // The process has completed and you can check the exit status or
+                // ignore it if you just need notification the process completed.
+                if (proc.get_successful()) {
+                    // log('the process succeeded');
+                    shell_settings.set_string("name", "reset");
+                } else {
+                    // log('the process failed');
+                }
+            } catch (e) {
+                logError(e);
+            } finally {
+                loop.quit();
+            }
+        });
+    } catch (e) {
+        logError(e);
+    }
+
+    loop.run();
+
+    // try {
+    //     // The process starts running immediately after this function is called. Any
+    //     // error thrown here will be a result of the process failing to start, not
+    //     // the success or failure of the process itself.
+    //     let proc = Gio.Subprocess.new(
+    //         // The program and command options are passed as a list of arguments
+    //         [EXTENSIONDIR + '/node_modules/sass/sass.js', scss_path, output_path],
+    
+    //         // The flags control what I/O pipes are opened and how they are directed
+    //         Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
+    //     );
+    
+    //     // Once the process has started, you can end it with `force_exit()`
+    //     // proc.force_exit();
+    // } catch (e) {
+    //     logError(e);
+    // }
 }
