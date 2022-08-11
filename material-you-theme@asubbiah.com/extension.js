@@ -131,35 +131,7 @@ function apply_theme(base_presets, color_mappings, notify=false) {
 
     // Overwriting keys in base_preset with material colors
 
-    for (const key in color_mapping) {
-        if (!Array.isArray(color_mapping[key])) {
-            if (color_mapping[key].opacity == 1) {
-                base_preset.variables[key] = string_utils.hexFromArgb(scheme[color_mapping[key].color]);
-            } else {
-                let argb = scheme[color_mapping[key].color];
-                let r = color_utils.redFromArgb(argb);
-                let g = color_utils.greenFromArgb(argb);
-                let b = color_utils.blueFromArgb(argb);
-                rgba_str = "rgba(" + r + ", " + g + ", " + b + ", " + color_mapping[key].opacity + ")"
-                base_preset.variables[key] = rgba_str;
-            }
-        } else {
-            if (color_mapping[key].length > 0) {
-                total_color = scheme[color_mapping[key][0].color]; // Setting base color
-                // Mixing in added colors
-                for (let i = 1; i < color_mapping[key].length; i++) {
-                    let argb = scheme[color_mapping[key][i].color];
-                    let r = color_utils.redFromArgb(argb);
-                    let g = color_utils.greenFromArgb(argb);
-                    let b = color_utils.blueFromArgb(argb);
-                    let a = color_mapping[key][i].opacity;
-                    let added_color = color_utils.argbFromRgba(r, g, b, a);
-                    total_color = color_utils.blendArgb(total_color, added_color);
-                }
-                base_preset.variables[key] = string_utils.hexFromArgb(total_color);
-            }
-        }
-    }
+    base_preset = map_colors(color_mapping, base_preset, scheme);
 
     // Generating gtk css from preset
     let css = "";
@@ -181,7 +153,7 @@ function apply_theme(base_presets, color_mappings, notify=false) {
     if (check_npm()) {
         modify_colors(EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.txt',
             EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.scss',
-            base_preset.variables
+            map_colors(color_mappings_sel.dark, base_presets.dark, theme.schemes.dark.props).variables
         );
         create_dir(GLib.get_home_dir() + '/.local/share/themes/MaterialYou');
         create_dir(GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell');
@@ -301,8 +273,6 @@ function modify_colors(scss_path, output_path, vars) {
 function compile_sass(scss_path, output_path) {
     let shell_settings = ExtensionUtils.getSettings(SHELL_SCHEMA);
 
-    let loop = GLib.MainLoop.new(null, false);
-
     try {
         let proc = Gio.Subprocess.new(
             [EXTENSIONDIR + '/node_modules/sass/sass.js', scss_path, output_path],
@@ -336,24 +306,37 @@ function compile_sass(scss_path, output_path) {
     } catch (e) {
         logError(e);
     }
+}
 
-    loop.run();
-
-    // try {
-    //     // The process starts running immediately after this function is called. Any
-    //     // error thrown here will be a result of the process failing to start, not
-    //     // the success or failure of the process itself.
-    //     let proc = Gio.Subprocess.new(
-    //         // The program and command options are passed as a list of arguments
-    //         [EXTENSIONDIR + '/node_modules/sass/sass.js', scss_path, output_path],
-    
-    //         // The flags control what I/O pipes are opened and how they are directed
-    //         Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
-    //     );
-    
-    //     // Once the process has started, you can end it with `force_exit()`
-    //     // proc.force_exit();
-    // } catch (e) {
-    //     logError(e);
-    // }
+function map_colors(color_mapping, base_preset, scheme) {
+    for (const key in color_mapping) {
+        if (!Array.isArray(color_mapping[key])) {
+            if (color_mapping[key].opacity == 1) {
+                base_preset.variables[key] = string_utils.hexFromArgb(scheme[color_mapping[key].color]);
+            } else {
+                let argb = scheme[color_mapping[key].color];
+                let r = color_utils.redFromArgb(argb);
+                let g = color_utils.greenFromArgb(argb);
+                let b = color_utils.blueFromArgb(argb);
+                rgba_str = "rgba(" + r + ", " + g + ", " + b + ", " + color_mapping[key].opacity + ")"
+                base_preset.variables[key] = rgba_str;
+            }
+        } else {
+            if (color_mapping[key].length > 0) {
+                total_color = scheme[color_mapping[key][0].color]; // Setting base color
+                // Mixing in added colors
+                for (let i = 1; i < color_mapping[key].length; i++) {
+                    let argb = scheme[color_mapping[key][i].color];
+                    let r = color_utils.redFromArgb(argb);
+                    let g = color_utils.greenFromArgb(argb);
+                    let b = color_utils.blueFromArgb(argb);
+                    let a = color_mapping[key][i].opacity;
+                    let added_color = color_utils.argbFromRgba(r, g, b, a);
+                    total_color = color_utils.blendArgb(total_color, added_color);
+                }
+                base_preset.variables[key] = string_utils.hexFromArgb(total_color);
+            }
+        }
+    }
+    return base_preset;
 }
