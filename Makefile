@@ -3,6 +3,7 @@ all: update-po build
 build:
 	gnome-extensions pack -f \
 		./material-you-theme@asubbiah.com/ \
+		--extra-source=shell \
 		--extra-source=blend \
 		--extra-source=hct \
 		--extra-source=palettes \
@@ -12,6 +13,7 @@ build:
 		--extra-source=utils \
 		--extra-source=base_presets.js \
 		--extra-source=color_mappings.js \
+		--extra-source=package.json \
 		-o .
 
 install:
