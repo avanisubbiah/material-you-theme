@@ -61,14 +61,18 @@ class Extension {
         this._prefsSettings.connect('changed::scheme', () => {
             apply_theme(base_presets, color_mappings, true);
         });
-        this._shellSettings = ExtensionUtils.getSettings(SHELL_SCHEMA);
-        this._shellSettings.connect('changed::name', () => {
-            // log("shell settings theme changed");
-            // log(this._shellSettings.get_string("name"));
-            if (this._shellSettings.get_string("name") === "reset") {
-                this._shellSettings.set_string("name", "MaterialYou");
-            }
-        });
+        try {
+            this._shellSettings = ExtensionUtils.getSettings(SHELL_SCHEMA);
+            this._shellSettings.connect('changed::name', () => {
+                // log("shell settings theme changed");
+                // log(this._shellSettings.get_string("name"));
+                if (this._shellSettings.get_string("name") === "reset") {
+                    this._shellSettings.set_string("name", "MaterialYou");
+                }
+            });
+        } catch (e) {
+            log(e);
+        }
 
         apply_theme(base_presets, color_mappings);
     }
@@ -88,6 +92,14 @@ function init(meta) {
 function apply_theme(base_presets, color_mappings, notify=false) {
     // Get prefs
     const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+    let shell_settings = null;
+    let warn_shell_theme = false;
+    try {
+        shell_settings = ExtensionUtils.getSettings(SHELL_SCHEMA);
+    } catch(e) {
+        log(e);
+        warn_shell_theme = true;
+    }
     const color_scheme = settings.get_string("scheme");
     const show_notifications = settings.get_boolean("show-notifications");
     const height = settings.get_int("resize-height");
@@ -158,13 +170,19 @@ function apply_theme(base_presets, color_mappings, notify=false) {
         create_dir(GLib.get_home_dir() + '/.local/share/themes/MaterialYou');
         create_dir(GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell');
         compile_sass(EXTENSIONDIR + '/shell/42/gnome-shell.scss',
-            GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell/gnome-shell.css');
+            GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell/gnome-shell.css',
+            shell_settings);
     }
 
     // Notifying user on theme change
     if (notify && show_notifications) {
-        Main.notify("Applied Material You " + color_scheme + " " + theme_str + " Theme",
-            "Some apps may require re-logging in to update");
+        if (warn_shell_theme) {
+            Main.notify("Applied Material You " + color_scheme + " " + theme_str + " Theme",
+                "WARNING! Shell theme could not be applied automatically, Some apps may require re-logging in to update");
+        } else {
+            Main.notify("Applied Material You " + color_scheme + " " + theme_str + " Theme",
+                "Some apps may require re-logging in to update");
+        }
     }
 }
 
@@ -270,8 +288,7 @@ function modify_colors(scss_path, output_path, vars) {
     write_str(colors_template, output_path);
 }
 
-function compile_sass(scss_path, output_path) {
-    let shell_settings = ExtensionUtils.getSettings(SHELL_SCHEMA);
+function compile_sass(scss_path, output_path, shell_settings) {
 
     try {
         let proc = Gio.Subprocess.new(
@@ -293,7 +310,9 @@ function compile_sass(scss_path, output_path) {
                 // ignore it if you just need notification the process completed.
                 if (proc.get_successful()) {
                     // log('the process succeeded');
-                    shell_settings.set_string("name", "reset");
+                    if (shell_settings != null) {
+                        shell_settings.set_string("name", "reset");
+                    }
                 } else {
                     // log('the process failed');
                 }
