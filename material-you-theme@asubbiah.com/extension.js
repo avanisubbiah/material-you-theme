@@ -167,8 +167,8 @@ function apply_theme(base_presets, color_mappings, notify=false) {
             EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.scss',
             map_colors(color_mappings_sel.dark, base_presets.dark, theme.schemes.dark.props).variables
         );
-        create_dir(GLib.get_home_dir() + '/.local/share/themes/MaterialYou');
-        create_dir(GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell');
+        create_dir_sync(GLib.get_home_dir() + '/.local/share/themes/MaterialYou');
+        create_dir_sync(GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell');
         compile_sass(EXTENSIONDIR + '/shell/42/gnome-shell.scss',
             GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell/gnome-shell.css',
             shell_settings);
@@ -221,6 +221,16 @@ async function create_dir(path) {
     }
 }
 
+function create_dir_sync(path) {
+    const file = Gio.File.new_for_path(path);
+    // Synchronous, blocking method
+    try {
+        file.make_directory(null);
+    } catch(e) {
+        log(e);
+    }
+}
+
 async function delete_file(path) {
     const file = Gio.File.new_for_path(path);
     try {
@@ -266,6 +276,12 @@ async function write_str(str, path) {
     }
 }
 
+function write_str_sync(str, path) {
+    const file = Gio.File.new_for_path(path);
+    const [, etag] = file.replace_contents(str, null, false,
+    Gio.FileCreateFlags.REPLACE_DESTINATION, null);
+}
+
 function read_file(path) {
     const file = Gio.File.new_for_path(path);
     const [, contents, etag] = file.load_contents(null);
@@ -285,7 +301,7 @@ function modify_colors(scss_path, output_path, vars) {
     for (const key in vars) {
         colors_template = colors_template.replace("{{" + key + "}}", vars[key]);
     }
-    write_str(colors_template, output_path);
+    write_str_sync(colors_template, output_path);
 }
 
 function compile_sass(scss_path, output_path, shell_settings) {
