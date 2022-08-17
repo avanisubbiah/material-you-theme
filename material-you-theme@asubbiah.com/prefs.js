@@ -8,6 +8,7 @@ function init() {}
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const EXTENSIONDIR = Me.dir.get_path();
+const ext_utils = Me.imports.utils.ext_utils;
 // const npm_utils = Me.imports.npm_utils;
 
 const PREFS_SCHEMA = "org.gnome.shell.extensions.material-you-theme";
@@ -75,6 +76,7 @@ class SassInstallRow extends Adw.ActionRow {
 
         button.connect('clicked', () => {
             install_npm_deps();
+            button.set_label("Installed");
             // npm_utils.install_npm_deps();
         });
 
@@ -201,8 +203,10 @@ class MiscGroup extends Adw.PreferencesGroup {
 function fillPreferencesWindow(window) {
     // Create a preferences page and group
     const page = new Adw.PreferencesPage();
-    const sass_group = new SassGroup();
-    page.add(sass_group);
+    if (!ext_utils.check_npm()) {
+        const sass_group = new SassGroup();
+        page.add(sass_group);
+    }
     const color_scheme_group = new ColorSchemeGroup();
     page.add(color_scheme_group);
     const misc_settings_group = new MiscGroup();

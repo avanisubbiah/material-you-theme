@@ -36,6 +36,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const theme_utils = Me.imports.utils.theme_utils;
 const color_utils = Me.imports.utils.color_utils;
 const string_utils = Me.imports.utils.string_utils;
+const ext_utils = Me.imports.utils.ext_utils;
 const { base_presets } = Me.imports.base_presets;
 const { color_mappings } = Me.imports.color_mappings;
 
@@ -162,7 +163,7 @@ function apply_theme(base_presets, color_mappings, notify=false) {
     write_str(css, config_path + "/gtk-4.0/gtk.css");
     write_str(css, config_path + "/gtk-3.0/gtk.css");
 
-    if (check_npm()) {
+    if (ext_utils.check_npm()) {
         modify_colors(EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.txt',
             EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.scss',
             map_colors(color_mappings_sel.dark, base_presets.dark, theme.schemes.dark.props).variables
@@ -289,11 +290,6 @@ function read_file(path) {
     const contentsString = decoder.decode(contents);
 
     return contentsString;
-}
-
-function check_npm() {
-    const file = Gio.File.new_for_path(EXTENSIONDIR + "/node_modules/sass/sass.js");
-    return file.query_exists(null);
 }
 
 function modify_colors(scss_path, output_path, vars) {
