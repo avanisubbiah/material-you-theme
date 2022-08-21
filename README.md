@@ -21,9 +21,9 @@ Log out and log back in and you should be able to enable it in your extension ma
 ### Shell Theming
 To enable gnome shell theming first install nodejs and npm, then click the install sass button in extension preferences.
 
-NOTE: If the User Themes extensions is installed through gnome extension store you will get a warning that the MaterialYou shell theme could not be applied automatically. In this case use Gnome Tweaks to manually apply the MaterialYou shell theme.
+If the User Themes extensions is installed through gnome extension store you will get a warning that the MaterialYou shell theme could not be applied automatically. In this case use Gnome Tweaks to manually apply the MaterialYou shell theme.
 
-NOTE: Using the extension now will theme your native installed libadwaita apps, follow the steps below to have the theme apply to GTK3 and flatpak apps.
+**NOTE:** Using the extension now will theme your native installed libadwaita apps, follow the steps below to have the theme apply to GTK3 and flatpak apps.
 
 ### Libadwaita
 #### Native
