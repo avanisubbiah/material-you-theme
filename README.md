@@ -11,6 +11,24 @@ Applies generated libadwaita theme from wallpaper using Material You
 
 ## Installation
 Copy the extension to your extensions folder (create the folder if it does not exist).
+
+**Build Dependencies**
+ - `gettext`
+
+Ubuntu
+
+```
+apt install gettext
+```
+
+Fedora
+
+```
+dnf install gettext
+```
+
+**Extension Installation**
+
 ```
 git clone https://github.com/avanishsubbiah/material-you-theme
 cd material-you-theme
