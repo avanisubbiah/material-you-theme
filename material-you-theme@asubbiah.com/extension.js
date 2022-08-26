@@ -163,14 +163,15 @@ function apply_theme(base_presets, color_mappings, notify=false) {
     write_str(css, config_path + "/gtk-4.0/gtk.css");
     write_str(css, config_path + "/gtk-3.0/gtk.css");
 
-    if (ext_utils.check_npm()) {
+    if (ext_utils.check_sass()) {
         modify_colors(EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.txt',
             EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.scss',
             map_colors(color_mappings_sel.dark, base_presets.dark, theme.schemes.dark.props).variables
         );
         create_dir_sync(GLib.get_home_dir() + '/.local/share/themes/MaterialYou');
         create_dir_sync(GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell');
-        compile_sass(EXTENSIONDIR + '/shell/42/gnome-shell.scss',
+        compile_sass(ext_utils.get_sass_path(),
+            EXTENSIONDIR + '/shell/42/gnome-shell.scss',
             GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell/gnome-shell.css',
             shell_settings);
     }
@@ -300,11 +301,11 @@ function modify_colors(scss_path, output_path, vars) {
     write_str_sync(colors_template, output_path);
 }
 
-function compile_sass(scss_path, output_path, shell_settings) {
+function compile_sass(sass_path, scss_path, output_path, shell_settings) {
 
     try {
         let proc = Gio.Subprocess.new(
-            [EXTENSIONDIR + '/node_modules/sass/sass.js', scss_path, output_path],
+            [sass_path, scss_path, output_path],
             Gio.SubprocessFlags.NONE
         );
 

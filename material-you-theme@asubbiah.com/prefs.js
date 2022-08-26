@@ -203,7 +203,7 @@ class MiscGroup extends Adw.PreferencesGroup {
 function fillPreferencesWindow(window) {
     // Create a preferences page and group
     const page = new Adw.PreferencesPage();
-    if (!ext_utils.check_npm()) {
+    if (!ext_utils.check_sass()) {
         const sass_group = new SassGroup();
         page.add(sass_group);
     }
