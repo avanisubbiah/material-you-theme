@@ -26,6 +26,8 @@ const PREFS_SCHEMA = 'org.gnome.shell.extensions.material-you-theme';
 const { Gio, GLib, Soup, GdkPixbuf, Gdk } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
+const Config = imports.misc.config;
+
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
@@ -164,15 +166,24 @@ function apply_theme(base_presets, color_mappings, notify=false) {
     write_str(css, config_path + "/gtk-3.0/gtk.css");
 
     if (ext_utils.check_npm()) {
-        modify_colors(EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.txt',
-            EXTENSIONDIR + '/shell/42/gnome-shell-sass/_colors.scss',
-            map_colors(color_mappings_sel.dark, base_presets.dark, theme.schemes.dark.props).variables
+        const version = Config.PACKAGE_VERSION.substring(0, 2);
+
+        modify_colors(
+            EXTENSIONDIR + "/shell/" + version + "/gnome-shell-sass/_colors.txt",
+            EXTENSIONDIR + "/shell/" + version + "/gnome-shell-sass/_colors.scss",
+            map_colors(
+                color_mappings_sel.dark,
+                base_presets.dark,
+                theme.schemes.dark.props
+            ).variables
         );
-        create_dir_sync(GLib.get_home_dir() + '/.local/share/themes/MaterialYou');
-        create_dir_sync(GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell');
-        compile_sass(EXTENSIONDIR + '/shell/42/gnome-shell.scss',
-            GLib.get_home_dir() + '/.local/share/themes/MaterialYou/gnome-shell/gnome-shell.css',
-            shell_settings);
+        create_dir_sync(GLib.get_home_dir() + "/.local/share/themes/MaterialYou");
+        create_dir_sync(GLib.get_home_dir() + "/.local/share/themes/MaterialYou/gnome-shell");
+        compile_sass(
+            EXTENSIONDIR + "/shell/" + version + "/gnome-shell.scss",
+            GLib.get_home_dir() + "/.local/share/themes/MaterialYou/gnome-shell/gnome-shell.css",
+            shell_settings
+        );
     }
 
     // Notifying user on theme change
