@@ -4,7 +4,8 @@
   "uuid": "material-you-theme@asubbiah.com",
   "gettext-domain": "material-you-theme",
   "shell-version": [
-    "42"
+    "42", 
+    "43"
   ],
   "url": "https://github.com/avanishsubbiah/material-you-theme",
   "version": 13
