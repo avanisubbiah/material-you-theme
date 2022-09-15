@@ -7,3 +7,8 @@ function check_npm() {
     const file = Gio.File.new_for_path(EXTENSIONDIR + "/node_modules/sass/sass.js");
     return file.query_exists(null);
 }
+
+function check_pywal() {
+    const file = Gio.File.new_for_path("/usr/bin/wal");
+    return file.query_exists(null);
+}

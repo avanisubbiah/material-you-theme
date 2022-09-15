@@ -152,6 +152,7 @@ function apply_theme(base_presets, color_mappings, notify=false) {
     let css = "";
     for (const key in base_preset.variables) {
         css += "@define-color " + key + " " + base_preset.variables[key] + ";\n"
+        if (key === "window_bg_color" && ext_utils.check_pywal()) run_pywal(base_preset.variables[key], wall_path)
     }
     for (const prefix_key in base_preset.palette) {
         for (const key_2 in base_preset.palette[prefix_key]) {
@@ -381,4 +382,15 @@ function map_colors(color_mapping, base_preset, scheme) {
         }
     }
     return base_preset;
+}
+
+function run_pywal(background, image) {
+    try {
+        Gio.Subprocess.new(
+            ['/usr/bin/wal', '-b', background, '-i', image],
+            Gio.SubprocessFlags.NONE
+        );
+    } catch (e) {
+        logError(e);
+    }
 }
