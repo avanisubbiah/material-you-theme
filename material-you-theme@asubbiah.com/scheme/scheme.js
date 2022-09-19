@@ -146,7 +146,7 @@ var Scheme = class Scheme {
         const core = CorePalette.of(argb);
         return new Scheme({
             primary: core.a1.tone(80),
-            onPrimary: core.a1.tone(20),
+            onPrimary: core.a1.tone(100),
             primaryContainer: core.a1.tone(30),
             onPrimaryContainer: core.a1.tone(90),
             secondary: core.a2.tone(80),
