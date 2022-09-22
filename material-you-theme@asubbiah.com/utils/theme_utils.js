@@ -27,12 +27,12 @@ const { hexFromArgb } = Me.imports.utils.string_utils;
  * @return Theme object
  */
 function themeFromSourceColor(source, customColors = []) {
-    const palette = CorePalette.of(source);
+    const palette = new CorePalette(source);
     return {
         source,
         schemes: {
-            light: Scheme.light(source),
-            dark: Scheme.dark(source),
+            light: Scheme.light(palette),
+            dark: Scheme.dark(palette),
         },
         palettes: {
             primary: palette.a1,
@@ -72,7 +72,7 @@ function customColor(source, color) {
     if (color.blend) {
         value = Blend.harmonize(from, to);
     }
-    const palette = CorePalette.of(value);
+    const palette = new CorePalette(value);
     const tones = palette.a1;
     return {
         color,

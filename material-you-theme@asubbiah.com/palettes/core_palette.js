@@ -15,6 +15,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const { Hct } = Me.imports.hct.hct;
 const { TonalPalette } = Me.imports.palettes.tonal_palette;
+const errorColor = new TonalPalette(25, 84);
 
 /**
  * An intermediate concept between the key color for a UI theme, and a full
@@ -25,18 +26,12 @@ var CorePalette = class CorePalette {
     constructor(argb) {
         const hct = Hct.fromInt(argb);
         const hue = hct.hue;
-        this.a1 = TonalPalette.fromHueAndChroma(hue, Math.max(48, hct.chroma));
-        this.a2 = TonalPalette.fromHueAndChroma(hue, 16);
-        this.a3 = TonalPalette.fromHueAndChroma(hue + 60, 24);
-        this.n1 = TonalPalette.fromHueAndChroma(hue, 4);
-        this.n2 = TonalPalette.fromHueAndChroma(hue, 8);
-        this.error = TonalPalette.fromHueAndChroma(25, 84);
-    }
-    /**
-     * @param argb ARGB representation of a color
-     */
-    static of(argb) {
-        return new CorePalette(argb);
+        this.a1 = new TonalPalette(hue, Math.max(48, hct.chroma));
+        this.a2 = new TonalPalette(hue, 16);
+        this.a3 = new TonalPalette(hue + 60, 24);
+        this.n1 = new TonalPalette(hue, 4);
+        this.n2 = new TonalPalette(hue, 8);
+        this.error = errorColor;
     }
 }
 //# sourceMappingURL=core_palette.js.map
