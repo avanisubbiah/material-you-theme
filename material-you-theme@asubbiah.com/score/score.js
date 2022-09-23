@@ -97,25 +97,23 @@ var Score = class Score {
                     break;
                 }
             }
-            if (duplicateHue) {
-                continue;
+            if (!duplicateHue) {
+                dedupedColorsToScore.set(color, colorsToScore.get(color));
             }
-            dedupedColorsToScore.set(color, colorsToScore.get(color));
         }
         // Ensure the list of colors returned is sorted such that the first in the
         // list is the most suitable, and the last is the least suitable.
         const colorsByScoreDescending = Array.from(dedupedColorsToScore.entries());
-        colorsByScoreDescending.sort((first, second) => {
-            return second[1] - first[1];
-        });
-        const answer = colorsByScoreDescending.map((entry) => {
-            return entry[0];
-        });
-        // Ensure that at least one color is returned.
-        if (answer.length === 0) {
-            answer.push(0xff4285F4); // Google Blue
+        let highScore = 0;
+        let highColor = undefined;
+        for (const color of colorsByScoreDescending) {
+            if (highScore > color[1]) {
+                highScore = color[1];
+                highColor = color[0];
+            }
         }
-        return answer;
+        if (highColor) return highColor;
+        return 0xff4285F4;
     }
     static filter(colorsToExcitedProportion, colorsToCam) {
         const filtered = new Array();

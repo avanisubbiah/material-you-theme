@@ -51,6 +51,6 @@ function sourceColorFromImage(image) {
 
     // Convert Pixels to Material Colors
     const result = QuantizerCelebi.quantize(pixels, 128);
-    return Score.score(result)[0];
+    return Score.score(result);
 }
 //# sourceMappingURL=image_utils.js.map
