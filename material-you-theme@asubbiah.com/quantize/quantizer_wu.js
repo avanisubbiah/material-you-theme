@@ -114,8 +114,7 @@ var QuantizerWu = class QuantizerWu {
         }
     }
     createBoxes(maxColors) {
-        this.cubes =
-            Array.from({ length: maxColors }).fill(0).map(() => new Box());
+        this.cubes = Array.from({ length: maxColors }).fill(new Box());
         const volumeVariance = Array.from({ length: maxColors }).fill(0.0);
         this.cubes[0].r0 = 0;
         this.cubes[0].g0 = 0;

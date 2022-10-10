@@ -106,8 +106,7 @@ var Scheme = class Scheme {
      * @param argb ARGB representation of a color.
      * @return Light Material color scheme, based on the color's hue.
      */
-    static light(argb) {
-        const core = CorePalette.of(argb);
+    static light(core) {
         return new Scheme({
             primary: core.a1.tone(40),
             onPrimary: core.a1.tone(100),
@@ -142,11 +141,10 @@ var Scheme = class Scheme {
      * @param argb ARGB representation of a color.
      * @return Dark Material color scheme, based on the color's hue.
      */
-    static dark(argb) {
-        const core = CorePalette.of(argb);
+    static dark(core) {
         return new Scheme({
             primary: core.a1.tone(80),
-            onPrimary: core.a1.tone(20),
+            onPrimary: core.a1.tone(100),
             primaryContainer: core.a1.tone(30),
             onPrimaryContainer: core.a1.tone(90),
             secondary: core.a2.tone(80),

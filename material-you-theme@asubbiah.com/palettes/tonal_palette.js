@@ -25,22 +25,6 @@ var TonalPalette = class TonalPalette {
         this.cache = new Map();
     }
     /**
-     * @param argb ARGB representation of a color
-     * @return Tones matching that color's hue and chroma.
-     */
-    static fromInt(argb) {
-        const hct = Hct.fromInt(argb);
-        return TonalPalette.fromHueAndChroma(hct.hue, hct.chroma);
-    }
-    /**
-     * @param hue HCT hue
-     * @param chroma HCT chroma
-     * @return Tones matching hue and chroma.
-     */
-    static fromHueAndChroma(hue, chroma) {
-        return new TonalPalette(hue, chroma);
-    }
-    /**
      * @param tone HCT tone, measured from 0 to 100.
      * @return ARGB representation of a color with that tone.
      */
