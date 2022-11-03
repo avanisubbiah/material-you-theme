@@ -45,6 +45,19 @@ You also need to install the [User Themes](https://extensions.gnome.org/extensio
 
 If User Themes is installed through gnome extension store you will get a warning that the MaterialYou shell theme could not be applied automatically. In this case use Gnome Tweaks or User Themes to manually apply the MaterialYou shell theme.
 
+### GDM Theming
+To enable GDM theming first install [gdm-tools](https://github.com/realmazharhussain/gdm-tools).
+Then run following commands to install the theme.
+```
+sudo cp -r ~/.local/share/themes/MaterialYou/ /usr/share/themes
+set-gdm-theme backup update
+gsettings get org.gnome.desktop.background picture-uri | set-gdm-theme set MaterialYou
+```
+If you experience problems, you need to run
+```
+set-gdm-theme default
+```
+
 ### Libadwaita
 #### Native
 Theming for native libadwaita will work by default.
