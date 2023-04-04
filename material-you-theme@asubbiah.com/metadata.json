@@ -5,7 +5,8 @@
   "gettext-domain": "material-you-theme",
   "shell-version": [
     "42", 
-    "43"
+    "43",
+    "44"
   ],
   "url": "https://github.com/avanishsubbiah/material-you-theme",
   "version": 14
