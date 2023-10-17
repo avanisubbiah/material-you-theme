@@ -1,4 +1,4 @@
-var color_mappings = {
+export var color_mappings = {
     default: {
         light: {
             accent_color: { color: "primary", opacity: 1 },
