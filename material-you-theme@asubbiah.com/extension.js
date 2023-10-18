@@ -47,6 +47,7 @@ export default class MaterialYou extends Extension {
     constructor(uuid) {
         super(uuid);
         this._uuid = uuid;
+        this.extensiondir = GLib.get_home_dir() + '/.local/share/gnome-shell/extensions/material-you-theme@asubbiah.com'; 
     }
 
     enable() {
@@ -80,7 +81,7 @@ export default class MaterialYou extends Extension {
     }
 
     disable() {
-        remove_theme();
+        this.remove_theme();
         this._interfaceSettings = null;
         this._wallpaperSettings = null;
         this._prefsSettings = null;
@@ -161,18 +162,23 @@ export default class MaterialYou extends Extension {
         this.create_dir(config_path + "/gtk-3.0");
         this.write_str(css, config_path + "/gtk-4.0/gtk.css");
         this.write_str(css, config_path + "/gtk-3.0/gtk.css");
-    
-        if (ext_utils.check_npm(this.dir)) {
+         
+        if (ext_utils.check_npm(this.extensiondir)) {
             const version = Config.PACKAGE_VERSION.substring(0, 2);
     
-            this.modify_colors(
-                this.dir + "/shell/" + version + "/gnome-shell-sass/_colors.txt",
-                this.dir
-            );
+          this.modify_colors(
+            this.extensiondir + "/shell/" + version + "/gnome-shell-sass/_colors.txt",
+            this.extensiondir + "/shell/" + version + "/gnome-shell-sass/_colors.scss",
+            this.map_colors(
+                color_mappings_sel.dark,
+                base_presets.dark,
+                theme.schemes.dark.props
+            ).variables
+          );
             this.create_dir_sync(GLib.get_home_dir() + "/.local/share/themes/MaterialYou");
             this.create_dir_sync(GLib.get_home_dir() + "/.local/share/themes/MaterialYou/gnome-shell");
             this.compile_sass(
-                this.dir + "/shell/" + version + "/gnome-shell.scss",
+                this.extensiondir + "/shell/" + version + "/gnome-shell.scss",
                 GLib.get_home_dir() + "/.local/share/themes/MaterialYou/gnome-shell/gnome-shell.css",
                 shell_settings
             );
@@ -192,8 +198,8 @@ export default class MaterialYou extends Extension {
     
     remove_theme() {
         // Undoing changes to theme when disabling extension
-        delete_file(GLib.get_home_dir() + "/.config/gtk-4.0/gtk.css");
-        delete_file(GLib.get_home_dir() + "/.config/gtk-3.0/gtk.css");
+        this.delete_file(GLib.get_home_dir() + "/.config/gtk-4.0/gtk.css");
+        this.delete_file(GLib.get_home_dir() + "/.config/gtk-3.0/gtk.css");
     
         // Get prefs
         // const settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
@@ -296,18 +302,18 @@ export default class MaterialYou extends Extension {
     }
     
     modify_colors(scss_path, output_path, vars) {
-        let colors_template = read_file(scss_path);
+        let colors_template = this.read_file(scss_path);
         for (const key in vars) {
             colors_template = colors_template.replace("{{" + key + "}}", vars[key]);
         }
-        write_str_sync(colors_template, output_path);
+        this.write_str_sync(colors_template, output_path);
     }
     
     compile_sass(scss_path, output_path, shell_settings) {
     
         try {
             let proc = Gio.Subprocess.new(
-                [this.dir + '/node_modules/sass/sass.js', scss_path, output_path],
+                [this.extensiondir + '/node_modules/sass/sass.js', scss_path, output_path],
                 Gio.SubprocessFlags.NONE
             );
     

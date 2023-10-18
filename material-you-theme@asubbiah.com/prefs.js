@@ -77,7 +77,7 @@ class SassInstallRow extends Adw.ActionRow {
         });
 
         button.connect('clicked', () => {
-            install_npm_deps(this.dir);
+            install_npm_deps(this.extensiondir);
             button.set_label("Installed");
             // npm_utils.install_npm_deps();
         });
@@ -204,13 +204,14 @@ class MiscGroup extends Adw.PreferencesGroup {
 export default class MaterialYouPrefs extends ExtensionPreferences {
     constructor(metadata) {
         super(metadata);
+        this.extensiondir = GLib.get_home_dir() + '/.local/share/gnome-shell/extensions/material-you-theme@asubbiah.com'; 
     }
 
     fillPreferencesWindow(window) {
         // Create a preferences page and group
         const page = new Adw.PreferencesPage();
         const settings = this.getSettings(PREFS_SCHEMA);
-        if (!ext_utils.check_npm(this.dir)) {
+        if (!ext_utils.check_npm(this.extensiondir)) {
             const sass_group = new SassGroup(settings);
             page.add(sass_group);
         }
