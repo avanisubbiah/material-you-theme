@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-07 19:05+0200\n"
+"POT-Creation-Date: 2023-10-18 15:14+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -12,10 +12,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.1.1\n"
 
-#: material-you-theme@asubbiah.com/extension.js:138
+#: material-you-theme@asubbiah.com/extension.js:136
 msgid "Light"
 msgstr "Claro"
 
-#: material-you-theme@asubbiah.com/extension.js:143
+#: material-you-theme@asubbiah.com/extension.js:141
 msgid "Dark"
 msgstr "Oscuro"
