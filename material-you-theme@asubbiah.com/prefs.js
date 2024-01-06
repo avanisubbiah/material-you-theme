@@ -1,14 +1,16 @@
 // -*- mode: js2; indent-tabs-mode: nil; js2-basic-offset: 4 -*-
 /* exported init buildPrefsWidget */
 
-const { Adw, Gio, GLib, GObject, Gtk } = imports.gi;
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+import Adw from 'gi://Adw';
+import Gtk from 'gi://Gtk';
+import GObject from 'gi://GObject';
 
-function init() {}
+import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const EXTENSIONDIR = Me.dir.get_path();
-const ext_utils = Me.imports.utils.ext_utils;
+import * as ext_utils from './utils/ext_utils.js';
+
 // const npm_utils = Me.imports.npm_utils;
 
 const PREFS_SCHEMA = "org.gnome.shell.extensions.material-you-theme";
@@ -39,13 +41,13 @@ class ColorSchemeGroup extends Adw.PreferencesGroup {
         GObject.registerClass(this);
     }
 
-    constructor() {
+    constructor(settings) {
         super({ title: "Color Profile" });
 
         this._actionGroup = new Gio.SimpleActionGroup();
         this.insert_action_group("color", this._actionGroup);
 
-        this._settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+        this._settings = settings;
         this._actionGroup.add_action(this._settings.create_action("scheme"));
 
         this.connect("destroy", () => this._settings.run_dispose());
@@ -75,7 +77,8 @@ class SassInstallRow extends Adw.ActionRow {
         });
 
         button.connect('clicked', () => {
-            install_npm_deps();
+            const extensiondir =  GLib.get_home_dir() + '/.local/share/gnome-shell/extensions/material-you-theme@asubbiah.com';
+            install_npm_deps(extensiondir);
             button.set_label("Installed");
             // npm_utils.install_npm_deps();
         });
@@ -94,10 +97,10 @@ class SassGroup extends Adw.PreferencesGroup {
         GObject.registerClass(this);
     }
 
-    constructor() {
+    constructor(settings) {
         super({ title: "Enable Gnome Shell Theming" });
 
-        this._settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+        this._settings = settings;
 
         this.connect("destroy", () => this._settings.run_dispose());
 
@@ -135,19 +138,21 @@ class PywalInstallRow extends Adw.ActionRow {
         this.add_suffix(button);
     }
 }
+
 class PywalGroup extends Adw.PreferencesGroup {
     static {
         GObject.registerClass(this);
     }
 
-    constructor() {
+    constructor(settings) {
         super({ title: "Enable Pywal Theming" });
 
-        this._settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+        this._settings = settings;
 
         this.connect("destroy", () => this._settings.run_dispose());
-
-        this._addPywalInstall("request-install", "Install Pywal with pip", "Requires pip3 to already be installed");
+        if (!ext_utils.check_wal()) {
+          this._addPywalInstall("request-install", "Install Pywal with pip", "Requires pip3 to already be installed");
+        }
         this._addToggle("enable-pywal-theming", this._settings, "Enable Pywal Theming");
     }
 
@@ -224,13 +229,13 @@ class MiscGroup extends Adw.PreferencesGroup {
         GObject.registerClass(this);
     }
 
-    constructor() {
+    constructor(settings) {
         super({ title: "Options" });
 
         this._actionGroup = new Gio.SimpleActionGroup();
         this.insert_action_group("misc", this._actionGroup);
 
-        this._settings = ExtensionUtils.getSettings(PREFS_SCHEMA);
+        this._settings = settings;
 
         this.connect("destroy", () => this._settings.run_dispose());
 
@@ -251,32 +256,38 @@ class MiscGroup extends Adw.PreferencesGroup {
         this.add(row);
     }
 }
-
-function fillPreferencesWindow(window) {
-    // Create a preferences page and group
-    const page = new Adw.PreferencesPage();
-    if (!ext_utils.check_npm()) {
-        const sass_group = new SassGroup();
-        page.add(sass_group);
+export default class MaterialYouPrefs extends ExtensionPreferences {
+    constructor(metadata) {
+        super(metadata); 
     }
-    const pywal_group = new PywalGroup();
-    page.add(pywal_group);
-    const color_scheme_group = new ColorSchemeGroup();
-    page.add(color_scheme_group);
-    const misc_settings_group = new MiscGroup();
-    page.add(misc_settings_group);
 
-    window.add(page);
+    fillPreferencesWindow(window) {
+        const extensiondir =  GLib.get_home_dir() + '/.local/share/gnome-shell/extensions/material-you-theme@asubbiah.com';
+        // Create a preferences page and group
+        const page = new Adw.PreferencesPage();
+        const settings = this.getSettings(PREFS_SCHEMA);
+        if (!ext_utils.check_npm(extensiondir)) {
+            const sass_group = new SassGroup(settings);
+            page.add(sass_group);
+        }
+        const color_scheme_group = new ColorSchemeGroup(settings);
+        page.add(color_scheme_group);
+        const misc_settings_group = new MiscGroup(settings);
+        const pywal_group = new PywalGroup(settings);
+        page.add(pywal_group);
+        page.add(misc_settings_group);
+
+        window.add(page);
+    }
 }
-
-function install_npm_deps() {
+function install_npm_deps(extensiondir) {
     try {
         // The process starts running immediately after this function is called. Any
         // error thrown here will be a result of the process failing to start, not
         // the success or failure of the process itself.
         let proc = Gio.Subprocess.new(
             // The program and command options are passed as a list of arguments
-            ['npm', 'install', '--prefix', EXTENSIONDIR],
+            ['npm', 'install', '--prefix', extensiondir],
     
             // The flags control what I/O pipes are opened and how they are directed
             Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
@@ -296,12 +307,12 @@ function install_pywal() {
         // the success or failure of the process itself.
         let proc = Gio.Subprocess.new(
             // The program and command options are passed as a list of arguments
-            ['pip3', 'install', 'pywal'],
-    
+            ['pip3', 'install', 'pywal'],  // NOTE: this may cause problems on some distributions
+
             // The flags control what I/O pipes are opened and how they are directed
             Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
         );
-    
+
         // Once the process has started, you can end it with `force_exit()`
         // proc.force_exit();
     } catch (e) {
