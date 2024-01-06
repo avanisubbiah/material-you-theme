@@ -105,6 +105,8 @@ export default class MaterialYou extends Extension {
         const show_notifications = settings.get_boolean("show-notifications");
         const height = settings.get_int("resize-height");
         const width = settings.get_int("resize-width");
+        const enable_pywal_theming = settings.get_boolean("enable-pywal-theming");
+
         let size = {height: height, width: width};
         let color_mappings_sel = color_mappings[color_scheme.toLowerCase()];
     
@@ -156,7 +158,9 @@ export default class MaterialYou extends Extension {
                 css += "@define-color " + prefix_key + key_2 + " " + base_preset.palette[prefix_key][key_2] + ";\n"
             }
         }
-    
+        if (enable_pywal_theming) {
+          this.run_pywal(base_preset.variables["window_bg_color"], wall_path, is_dark)
+        } 
         let config_path = GLib.get_home_dir() + "/.config";
         this.create_dir(config_path + "/gtk-4.0");
         this.create_dir(config_path + "/gtk-3.0");
@@ -388,5 +392,22 @@ export default class MaterialYou extends Extension {
         }
         return base_preset;
     }
+    run_pywal(background, image, is_dark) {
+      try {
+          if (is_dark) {
+              Gio.Subprocess.new(
+                  ['/usr/bin/wal', '-b', background, '-i', image, '-nqe'],
+                  Gio.SubprocessFlags.NONE
+              );
+          } else {
+              Gio.Subprocess.new(
+                  ['/usr/bin/wal', '-b', background, '-i', image, '-nqel'],
+                  Gio.SubprocessFlags.NONE
+              );
+          }
+      } catch (e) {
+          logError(e);
+      }
+    } 
     
 }
