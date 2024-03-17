@@ -7,10 +7,15 @@ export function check_npm(extensiondir) {
 }
 
 export function check_wal() {
-  const process = Gio.Subprocess.new(
-    ["wal", "-v"],
-    Gio.SubprocessFlags.NONE
-  );
-  process.wait(null);
-  return process.get_successful();
+  try {
+    const process = Gio.Subprocess.new(
+      ["wal", "-v"],
+      Gio.SubprocessFlags.NONE
+    );
+    process.wait(null);
+    return process.get_successful();
+  } catch (e) {
+    log(e);
+    return false;
+  }
 }
