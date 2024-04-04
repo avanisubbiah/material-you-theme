@@ -1,3 +1,6 @@
+# Repository temporary moved
+Since avanisubbiah can't maintain this project anymore, and updated version is maintained in a fork [here](https://github.com/FrancescoCaracciolo/material-you-colors). (The fork was needed in order to publish the extension on Gnome Extensions portal)
+- - - 
 # Material You Color Theming
 Applies generated libadwaita theme from wallpaper using Material You
 
